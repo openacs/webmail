@@ -40,7 +40,7 @@ if { [empty_string_p $to] && [empty_string_p $cc] && [empty_string_p $bcc]  } {
     ad_script_abort
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 set creation_user [db_string creation_user {
     SELECT user_id

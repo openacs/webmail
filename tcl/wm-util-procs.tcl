@@ -239,7 +239,7 @@ ad_proc wm_get_mailbox_list { { user_id "" } } {
     set mailbox_list [ad_get_client_property -default "" webmail mailbox_list]
     if { [empty_string_p $mailbox_list] } {
 	if { [empty_string_p $user_id] } {
-	    set user_id [ad_verify_and_get_user_id]
+	    set user_id [ad_conn user_id]
 	}
 	set mailbox_list [db_list_of_lists wm_mailbox_name_ids {
 	    SELECT mailbox_id, name FROM wm_mailboxes 

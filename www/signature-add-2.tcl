@@ -15,7 +15,7 @@ ad_page_contract {
     action:onevalue
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 set signature [ad_decode [string equal $action "Delete"] 1 "" $signature]
 set html_p [ad_decode [empty_string_p $html] 1 "f" "t"]

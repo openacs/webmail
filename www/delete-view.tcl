@@ -10,7 +10,7 @@ ad_page_contract {
     edit_filter_id:integer,notnull
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 db_dml delete {
     DELETE FROM wm_filter_views

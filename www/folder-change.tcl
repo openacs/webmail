@@ -22,7 +22,7 @@ ad_page_contract {
     }
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 set folder_name [wm_mailbox_verify_and_get_name $mailbox_id $user_id]
 
 if { [string equal $action Empty]

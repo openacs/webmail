@@ -21,7 +21,7 @@ ad_page_contract {
 }
 
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 if { [empty_string_p $mailbox_id] && [string equal $action "Refile"] } {
     ad_return_complaint 1 "<li>You have to select a folder to which to refile this message."

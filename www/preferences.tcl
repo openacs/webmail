@@ -22,7 +22,7 @@ ad_page_contract {
 }
 
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 set preferences_query "SELECT messages_per_page, signature_p,
                          forward_address, forward_p, auto_save_p,

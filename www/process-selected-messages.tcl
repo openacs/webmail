@@ -25,7 +25,7 @@ if { [string equal $mailbox_id "@NEW"] } {
     ad_returnredirect "folder-create?target=[ad_urlencode "refile-selected?[export_url_vars return_url]"]"
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 with_catch errmsg { 
     set trash_mailbox_id [db_string trash_mailbox_id "

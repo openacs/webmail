@@ -11,7 +11,7 @@ ad_page_contract {
     { return_url "clear-cache-mailbox" }
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 set msg_ids [ad_get_client_property "webmail" "selected_messages"]
 

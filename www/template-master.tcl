@@ -15,7 +15,7 @@ ad_page_contract {
 # parameter received is $context
 #
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 set show_mailbox_info [ad_parameter -package_id [wm_get_webmail_id] ShowMailboxInfo]
 if { $show_mailbox_info == "f" } {

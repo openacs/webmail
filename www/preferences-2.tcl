@@ -35,7 +35,7 @@ ad_page_contract {
 	    ad_complain {You did not specify an address to forward your mail to.}
 	}
 	# check for circular forwards...
-	set user_id [ad_verify_and_get_user_id]
+	set user_id [ad_conn user_id]
 	set email_query "SELECT lower(email_user_name || '@' || 
                               full_domain_name) 
                            AS email_address
@@ -72,7 +72,7 @@ ad_page_contract {
     }
 }
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 set forward_address [string tolower $forward_address]
 
 

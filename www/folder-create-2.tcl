@@ -12,7 +12,7 @@ ad_page_contract {
     target:notnull
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 if { [string length $folder_name] > 50 } {
     wm_return_error "The folder name you entered ($folder_name) was invalid.  Please hit back and try again (the length limit is 50 characters)"

@@ -25,7 +25,7 @@ ad_page_contract {
     url:onevalue
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 # CLEARING CACHED MESSAGES IDS:
 # we clear when either the mailbox_id or the orderby 

@@ -23,7 +23,7 @@ ad_page_contract {
     message_headers:onevalue
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 if { ![wm_msg_permission $msg_id $user_id] } {
     wm_return_error "

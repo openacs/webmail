@@ -22,7 +22,7 @@ template::multirow create mailboxes mailbox_id name checked newrow
 template::multirow create constr_selected comp_object comp_type comp_string
 
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 
 if { ![exists_and_not_null num_per_line] } {
     set num_per_line 2

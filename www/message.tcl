@@ -31,7 +31,7 @@ ad_page_contract {
     message_headers:onevalue
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 set return_url [ad_urlencode "message?[export_url_vars view_id msg_id]"]
 

@@ -46,7 +46,7 @@ if { ![empty_string_p $age_type] && ![string equal $age_type off] } {
 }
 lappend filter_list [list read matches $status]
 
-set user_id [ad_verify_and_get_user_id]
+set user_id [ad_conn user_id]
 set edit_filter_p [db_string filter_view_exists {
     SELECT 1 FROM wm_filter_views
     WHERE filter_id = :edit_filter_id

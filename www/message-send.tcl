@@ -39,7 +39,7 @@ set signature_html_p ""
 set cc ""
 set bcc ""
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 set from [db_string wm_email "
                   SELECT email_user_name 

@@ -26,7 +26,7 @@ ad_page_contract {
     n_messages_comma:onevalue
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 # Set the mailbox_id to 0 because we're in a view
 ad_set_client_property -persistent f "webmail" mailbox_id ""
