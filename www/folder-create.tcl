@@ -13,6 +13,6 @@ ad_page_contract {
 }
 
 
-set context [ad_context_bar_ws [list "index.tcl" "WebMail"] "Create New Folder"]
+set context [ad_context_bar_ws [list "./" "WebMail"] "Create New Folder"]
 
 ad_return_template

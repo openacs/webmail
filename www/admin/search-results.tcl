@@ -38,7 +38,7 @@ append results "</ul>"
 doc_return 200 text/html "[ad_admin_header "One Domain"]
 <h2>$full_domain_name</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "One Domain"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] "One Domain"]
 
 <hr>
 <blockquote>

@@ -23,14 +23,14 @@ set email [db_string wm_email "select email_user_name
 doc_return 200 text/html "[ad_admin_header "Delete User"]
 <h2>Delete User</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "One Domain"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] "One Domain"]
 
 <hr>
 <br>
 Really delete the webmail account for  <b>$full_name: $email</b>?<br>
 This will delete all associated mailboxes and messages.
 
-<form action=\"delete-user-2.tcl\">
+<form action=\"delete-user-2\">
 [export_form_vars short_name user_id]
 <input type=submit name=action value=Delete>&nbsp;&nbsp;
 <input type=submit name=action value=Cancel>

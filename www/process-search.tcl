@@ -65,6 +65,6 @@ for { set i 1 } { $i < 4 } { incr i } {
     append form_vars [export_form_vars "comp_object.$i" "comp_type.$i" "comp_string.$i"]
 }
 
-set context [ad_context_bar_ws [list "index.tcl" "WebMail"] "Save view"]
+set context [ad_context_bar_ws [list "./" "WebMail"] "Save view"]
 
 ad_return_template

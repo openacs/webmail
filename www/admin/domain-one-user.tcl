@@ -36,7 +36,7 @@ db_1row wm_user_account_info {
 doc_return 200 text/html "[ad_admin_header "One Domain"]
 <h2>$full_domain_name</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "domain-one?[export_url_vars short_name]" "One Domain"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] "domain-one?[export_url_vars short_name]" "One Domain"]
 
 <hr>
 <blockquote>

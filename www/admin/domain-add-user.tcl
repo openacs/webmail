@@ -19,7 +19,7 @@ where short_name = :short_name"]
 doc_return 200 text/html "[ad_admin_header "Add User"]
 <h2>$full_domain_name</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] [list "domain-one.tcl?[export_url_vars short_name]" "One Domain"] "Create Account"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] [list "domain-one?[export_url_vars short_name]" "One Domain"] "Create Account"]
 
 <hr>
 

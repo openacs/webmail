@@ -11,7 +11,7 @@ ad_page_contract {
 doc_return 200 text/html "[ad_admin_header "Add a Domain"]
 <h2>Add a Domain</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "Add Domain"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] "Add Domain"]
 
 
 <hr>

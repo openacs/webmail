@@ -44,7 +44,7 @@ db_foreach broken_jobs {
 doc_return 200 text/html "[ad_admin_header "Common WebMail Problems"]
 <h2>Common Webmail Problems</h2>
 
- [ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "Common Problems"]
+ [ad_admin_context_bar [list "./" "WebMail Admin"] "Common Problems"]
 
 <hr>
 

@@ -20,7 +20,7 @@ if { $action == "Delete" } {
 	set result "[ad_admin_header "Delete User"]
 	<h2>Delete User</h2>
 	
-	[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "One Domain"]
+	[ad_admin_context_bar [list "./" "WebMail Admin"] "One Domain"]
 	
 	<hr><br>
 	<b>We received the following error:</b>

@@ -24,7 +24,7 @@ ad_proc wm_likefy { string } {
 
 
 ad_proc wm_build_view_sql { user_id view_id } {
-    Builds the inner part of the complex index-view.tcl query
+    Builds the inner part of the complex index-view query
     for the specified view.
     If you pass view_id as -1, it will attempt to get the view from 
     the client's browser properties (used for the "Custom View")

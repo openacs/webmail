@@ -62,7 +62,7 @@ db_foreach folder_query $folder_query {
 set message_total [util_commify_number $message_total]
 set size_total [util_commify_number $size_total]
 
-set target "folder-index.tcl"
+set target "folder-index"
 
 ad_return_template 
 

@@ -17,14 +17,14 @@ where short_name = :short_name"]
 doc_return 200 text/html "[ad_admin_header "Delete Domain"]
 <h2>Delete Domain</h2>
 
-[ad_admin_context_bar [list "index.tcl" "WebMail Admin"] "Delete Domain"]
+[ad_admin_context_bar [list "./" "WebMail Admin"] "Delete Domain"]
 
 <hr>
 <br>
 Really delete the domain <b>$full_domain_name</b>?</br>
 This will delete all associated email accounts.
 
-<form action=\"domain-delete-2.tcl\">
+<form action=\"domain-delete-2\">
 [export_form_vars short_name]
 <input type=submit name=action value=Delete>&nbsp;&nbsp;
 <input type=submit name=action value=Cancel>
