@@ -32,7 +32,7 @@
 <TD><B>Attach File:</B> &nbsp;<input type="file" name="upload_file"></TD>
 </TR>
 <TR>
-<TD colspan="3"><HR width=95%></TD>
+<TD colspan="3"><HR width="95%"></TD>
 </TR>
 <TR>
 <TD valign=top>2.</TD>
@@ -45,7 +45,7 @@
 </center></TD>
 </TR>
 <TR>
-<TD colspan="3"><HR width=95%></TD>
+<TD colspan="3"><HR width="95%"></TD>
 </TR>
 <TR>
 <TD valign=top>3.</TD>
