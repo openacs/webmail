@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <script language=JavaScript>
 
@@ -41,7 +41,7 @@
   <input type=hidden name="view_id" value="@view_id@">
   <select name="mailbox_id" onChange="SynchMoves(1)"> 
     <option value="" selected>Select Folder</option>
-    <include src="util-pages/mailbox-options" exclude_id="@mailbox_id@"> 
+    <include src="util-pages/mailbox-options" exclude_id="@mailbox_id;noquote@"> 
   </select>
   <input type=submit name="action" value="Refile">
 
@@ -125,7 +125,7 @@
 
   <select name="mailbox_id2" onChange="SynchMoves(2)">
     <option value="">Select Folder</option>
-    <include src="util-pages/mailbox-options" exclude_id="@mailbox_id@"> 
+    <include src="util-pages/mailbox-options" exclude_id="@mailbox_id;noquote@"> 
   </select>
   <input type=submit name="action" value="Refile">
 

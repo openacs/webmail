@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <br><br>
 <form action="folder-create-2" method=POST>

@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <script language=JavaScript>
 <!--
@@ -46,14 +46,14 @@
     </else>
   </td>
   <td align="right">
-    <include src="util-pages/page-links" n_messages="@n_messages@" cur_page="@page_num@" msg_per_page="@msg_per_page@" url="@url@">
+    <include src="util-pages/page-links" n_messages="@n_messages;noquote@" cur_page="@page_num;noquote@" msg_per_page="@msg_per_page;noquote@" url="@url;noquote@">
   </td>
 </tr>
 </table>
 
 <if @customize@ eq "t">
   <form name="search-form"action="process-search" method=POST>
-    <include src="util-pages/constraint-form" edit_filter_id="@view_id@" num_per_line="5" no_text="t">
+    <include src="util-pages/constraint-form" edit_filter_id="@view_id;noquote@" num_per_line="5" no_text="t">
     &nbsp;&nbsp;&nbsp;&nbsp;
     <input type=submit name="action" value="Search"> 
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -116,7 +116,7 @@
     </tr>
     <tr bgcolor="#cccccc">
       <td colspan="2" align="right">
-        <include src="util-pages/page-links" n_messages="@n_messages@" cur_page="@page_num@" msg_per_page="@msg_per_page@" url="@url@">
+        <include src="util-pages/page-links" n_messages="@n_messages;noquote@" cur_page="@page_num;noquote@" msg_per_page="@msg_per_page;noquote@" url="@url;noquote@">
       </td>    
   </tr>
   </table>

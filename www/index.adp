@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <script language=JavaScript>
 <!--
@@ -41,8 +41,8 @@ function SynchMoves(primary) {
     </else>
   </td>
  <td align="right">
-    <include src="util-pages/page-links" n_messages="@n_messages@" cur_page="@page_num@" msg_per_page="@msg_per_page@" url="@url@">
-    <if @mailbox_name@ eq "TRASH">
+    <include src="util-pages/page-links" n_messages="@n_messages;noquote@" cur_page="@page_num;noquote@" msg_per_page="@msg_per_page;noquote@" url="@url;noquote@">
+    <if @mailbox_name;noquote@ eq "TRASH">
       <a href="folder-change-2?action=Empty&action2=Empty&mailbox_id=@mailbox_id@&target=@empty_trash_target@">Empty Trash</a><br>
     </if>
   </td>
@@ -66,7 +66,7 @@ function SynchMoves(primary) {
     </if>
     <input type=submit name=action value="Refile">
     <select name=mailbox_id <if @message_count@ gt 20>onChange="SynchMoves(1)"</if>>
-      <include src="util-pages/mailbox-options" select_id="@mailbox_id@">
+      <include src="util-pages/mailbox-options" select_id="@mailbox_id;noquote@">
     <option value="@NEW">New Folder</option>
     </select>
     </font>
@@ -99,7 +99,7 @@ function SynchMoves(primary) {
       </if>
       <input type=submit name=action value="Refile"> 
       <select name=mailbox_id2 onChange="SynchMoves(2)">
-	<include src="util-pages/mailbox-options" select_id="@mailbox_id@">
+	<include src="util-pages/mailbox-options" select_id="@mailbox_id;noquote@">
       <option value="@NEW">New Folder</option>
       </select>
       </font>
@@ -107,8 +107,8 @@ function SynchMoves(primary) {
   </tr>
   <tr bgcolor="#DDDDDD">
     <td colspan="2" align="right">
-      <include src="util-pages/page-links" n_messages="@n_messages@" cur_page="@page_num@" msg_per_page="@msg_per_page@" url="@url@">
-      <if @mailbox_name@ eq "TRASH">
+      <include src="util-pages/page-links" n_messages="@n_messages;noquote@" cur_page="@page_num;noquote@" msg_per_page="@msg_per_page;noquote@" url="@url;noquote@">
+      <if @mailbox_name;noquote@ eq "TRASH">
         <a href="folder-change-2?action=Empty&action2=Empty&mailbox_id=@mailbox_id@&target=@empty_trash_target@">Empty Trash</a><br>
       </if>
     </td>

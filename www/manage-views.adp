@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <b>Existing views:</b>
 <ul>
@@ -29,7 +29,7 @@
 Name: <input type=text name="view_name" size=50 maxlength=50 value="@filter_name@"> 
 <br>
 <br>
-<include src="util-pages/constraint-form" edit_filter_id="@edit_filter_id@" num_per_line="2">
+<include src="util-pages/constraint-form" edit_filter_id="@edit_filter_id;noquote@" num_per_line="2">
 <br>
 <if @edit_filter_id@ ne 0>
   <a href="delete-view?edit_filter_id=@edit_filter_id@">Delete this view</a>

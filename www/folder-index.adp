@@ -1,5 +1,5 @@
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 
 <table border=0 cellspacing=1 cellpadding=4>
   <tr>

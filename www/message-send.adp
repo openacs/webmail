@@ -1,7 +1,7 @@
 
 
 <master src="template-master">
-<property name="context">@context@</property>
+<property name="context">@context;noquote@</property>
 <FONT face="verdana">
 
 <script language=JavaScript>
