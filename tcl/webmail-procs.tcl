@@ -79,7 +79,7 @@ ad_proc wm_add_user { user_id username short_name } {
 	    }
 	}
 	with_catch errmsg {
-	    set client_tz [ad_locale_get_system_timezone]
+	    set client_tz [lang::system::timezone]
 	} {
 	    set client_tz "GMT"
 	}

@@ -24,7 +24,7 @@ ad_proc wm_get_client_tz_offset { user_id } {
 		SELECT ( (sysdate - timezone.local_to_utc (:client_tz, sysdate)) * 24 ) 
 		FROM dual 
 	    }]
-	    set client_tz_offset [expr [ad_locale_system_tz_offset] - $client_oracle_offset]
+	    set client_tz_offset [expr [lang::system::timezone_utc_offset] - $client_oracle_offset]
 	} {
 	    # They probably have not installed acs-lang; return no offset
 	    return 0
