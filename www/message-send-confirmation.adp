@@ -2,6 +2,6 @@
 <property name="context">@context@</property>
 
 <br><br><blockquote>
-<b>Your message has been succesfully sent.</b>
+<b>Your message has been successfully sent.</b>
 <br>
 </blockquote>
