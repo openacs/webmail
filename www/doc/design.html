@@ -1,0 +1,1528 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Webmail Design Document</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="aD Hack of: Modular DocBook HTML Stylesheet Version 1.60"><LINK
+REL="HOME"
+TITLE="Webmail"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Developer's guide"
+HREF="dev-guide.html"><LINK
+REL="PREVIOUS"
+TITLE="Developer's guide"
+HREF="dev-guide.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="ad-doc.css"></HEAD
+><BODY
+CLASS="sect1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Webmail</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="dev-guide.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Developer's guide</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+>&nbsp;</TD
+></TR
+></TABLE
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="design"
+>2.2. Webmail Design Document</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>2.2.1. <A
+HREF="design.html#design-essentials"
+>Essentials</A
+></DT
+><DT
+>2.2.2. <A
+HREF="design.html#design-introduction"
+>Introduction</A
+></DT
+><DT
+>2.2.3. <A
+HREF="design.html#design-historical-considerations"
+>Historical Considerations</A
+></DT
+><DT
+>2.2.4. <A
+HREF="design.html#design-competitive-analysis"
+>Competitive Analysis</A
+></DT
+><DT
+>2.2.5. <A
+HREF="design.html#design-design-tradeoffs"
+>Design Tradeoffs</A
+></DT
+><DT
+>2.2.6. <A
+HREF="design.html#design-data-model-discussion"
+>Data Model Discussion</A
+></DT
+><DT
+>2.2.7. <A
+HREF="design.html#design-legal-transactions"
+>Legal Transactions</A
+></DT
+><DT
+>2.2.8. <A
+HREF="design.html#design-api"
+>API</A
+></DT
+><DD
+><DL
+><DT
+>2.2.8.1. <A
+HREF="design.html#design-plsql-api"
+>PL/SQL Procedures</A
+></DT
+><DT
+>2.2.8.2. <A
+HREF="design.html#design-tcl-api"
+>Tcl Procedures:</A
+></DT
+></DL
+></DD
+><DT
+>2.2.9. <A
+HREF="design.html#design-user-interface"
+>User Interface</A
+></DT
+><DT
+>2.2.10. <A
+HREF="design.html#design-configurationparameters"
+>Configuration/Parameters</A
+></DT
+><DT
+>2.2.11. <A
+HREF="design.html#design-future-improvementsareas-of-likely-change"
+>Future Improvements/Areas of Likely Change</A
+></DT
+><DT
+>2.2.12. <A
+HREF="design.html#design-authors"
+>Authors</A
+></DT
+></DL
+></DIV
+><P
+>by Erik Bielefeldt (adapted from the original by Jin Choi)</P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-essentials"
+>2.2.1. Essentials</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+>User-accessible directory: <A
+HREF="/webmail/"
+TARGET="_top"
+>/webmail/</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Site adminstrator directory: <A
+HREF="/webmail/admin/"
+TARGET="_top"
+>/webmail/admin/</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>data model: <A
+HREF="/doc/sql/display-sql?url=/doc/sql/webmail.sql"
+TARGET="_top"
+>/doc/sql/webmail.sql</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>procedures: /tcl/webmail-procs.tcl</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><A
+HREF="dev-guide.html#requirements"
+>Webmail Application Requirements</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>ASJ Article: <A
+HREF="/asj/webmail/"
+TARGET="_top"
+>/asj/webmail/</A
+></P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-introduction"
+>2.2.2. Introduction</A
+></H2
+><P
+>Email handlers are among the first user-level programs written
+      for any new operating system, and are one of the few core tools
+      that almost anyone using a computer will use on a regular basis.
+      Most recently, we have seen a blossoming of Web-based email systems
+      such as Hotmail and Yahoo Mail. Why build yet another mail
+      system?</P
+><P
+>Some of the desirable traits of a mail system are:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Centralized storage. Users should see the same email history
+	  every time they check email, no matter which computer or email
+	  reader they happen to be using.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Reliability. Email is important. A disk failure or a negligent
+	  sysadmin should not be a cause for losing it. The mail server
+	  should always be running, and well-connected to the internet.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Availability. Email should be readable wherever you are.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Completeness and correctness. An email reader should be able to
+	  receive, display, and send attachments. Any message it sends should
+	  be standards-conforming. Because many other systems are not, it
+	  should be able to handle common deviations from the standard.</P
+></LI
+></UL
+><P
+>&#13;
+      The webmail application addresses the first three traits (the last
+      is a work in progress). These requirements argue for the primary
+      message store to remain on a well-administered server. These are
+      the same needs addressed by the designers of IMAP. IMAP solves all
+      these issues except for one: availability; an IMAP client isn't
+      always installed on every computer with a net connection, whereas a
+      Web browser almost always is. But a Web browser is a
+      less-than-ideal interface for reading email when compared to an
+      all-singing, all-dancing mail client. Thus, the ideal mail solution
+      is an IMAP server with a web interface that accesses the same
+      message store as the IMAP client. 
+
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-historical-considerations"
+>2.2.3. Historical Considerations</A
+></H2
+><P
+>Mail systems with this architecture already exist. Oracle
+      provides software that does what the webmail application does, and
+      probably more. CriticalPath is a company that provides outsourced
+      email with IMAP and web front ends. These may be better than
+      webmail. CriticalPath certainly has the advantage that it requires
+      no effort on the part of the user other than sending them a check
+      every once in a while. However, Jin Choi reports that when he used
+      CriticalPath, it was unreachable or unuseably slow about half the
+      time (usually due to network problems to their server). He also ran
+      out of patience attempting to install Oracle Email Server.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-competitive-analysis"
+>2.2.4. Competitive Analysis</A
+></H2
+><P
+>The downside to these other systems is lack of control. It is
+      difficult to modify the look or extend the features of an email
+      server without access to the source code. In the case of
+      CriticalPath, you are stuck with what they provide, and cannot
+      integrate it to provide web-based email as a seamless service of
+      your web site. If you are using the ArsDigita Community System,
+      webmail provides the core of a web-based email system that relies
+      on proven, reliable systems to do all of the hard work and that is
+      simple to extend. If you are not using the ACS, then perhaps
+      studying an implementation of a working system will aid you in
+      building something suitable for your own needs.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-design-tradeoffs"
+>2.2.5. Design Tradeoffs</A
+></H2
+><P
+>In reworking Jin Choi's original implementation, we sought to
+      improve it in a couple ways. First, Webmail was lacking some basic
+      functionality that many web-based email services provide, like a
+      decent folder system, signatures, a paged index view, forwarding
+      messages, and a customizable interface. The second consideration
+      was to improve performance, mainly through reworking the data model
+      and resource consuming queries. In particular, the delivery of
+      messages and the main index view are areas which need to be as
+      efficient as possible. The former restricts the volume of incoming
+      mail that Webmail may handle, and the latter affects both server
+      load and usability. The index view is not only the most used, but
+      one of the most expensive pages in terms of working the database.
+      Where I made changes to the original data-model, it will be noted
+      why the change was made below it.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-data-model-discussion"
+>2.2.6. Data Model Discussion</A
+></H2
+><P
+>&#13;
+      The following section will step through the data model, discussing
+      important or interesting aspects. 
+
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Domains for which we receive email.
+    create table wm_domains (
+            -- short text key
+            short_name              varchar(100) not null primary key,
+            -- fully qualified domain name
+            full_domain_name        varchar(100) not null
+    );
+        </PRE
+><P
+>&#13;      The <TT
+CLASS="computeroutput"
+>wm_domains</TT
+> table contains the domains for which we
+      expect to receive mail. The <TT
+CLASS="computeroutput"
+>short_name</TT
+> field stores
+      the text key used to differentiate mail to different domains as
+      discussed above. Qmail must be configured to handle email for these
+      domains manually. 
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Maps email accounts to ACS users.
+    create table wm_email_user_map (
+        user_id         references users,
+        email_user_name     varchar(100) not null,
+        delivery_address    varchar(200) not null,
+        domain          references wm_domains,
+        primary key (user_id)
+    );
+        </PRE
+><P
+><TT
+CLASS="computeroutput"
+>wm_email_user_map</TT
+> assigns email addresses to ACS
+      users. Why not just use the <TT
+CLASS="computeroutput"
+>email</TT
+> column in the
+      <TT
+CLASS="computeroutput"
+>users</TT
+> table? This approach permits flexibility on
+      which address is published to other registered users and provides
+      an external contact if needed. As a row is inserted into this
+      table, the appropriate .qmail alias files are created for that
+      user. 
+
+    </P
+><P
+><TT
+CLASS="computeroutput"
+>delivery_address</TT
+> contains the full qmail delivery
+      address: <TT
+CLASS="computeroutput"
+>(wm_domains.short_name || '-' || email_user_name ||
+	'@' || wm_domains.full_domain_name)</TT
+> for ease and speed of
+      lookup in the delivery process (otherwise we will have to re-create
+      it for each user on each delivery). I have removed the possibility
+      of one user being mapped to two Webmail accounts because of its
+      confusing nature. There was also some extra code involved and
+      performance drawbacks too.</P
+><PRE
+CLASS="programlisting"
+>    
+    -- Maps mailboxes (folders, in more common terminology) to ACS users.
+    create sequence wm_mailbox_id_sequence;
+    
+    create table wm_mailboxes (
+            mailbox_id      integer primary key,
+            name            varchar(100) not null,
+            creation_user   references users(user_id),
+            creation_date   date,
+            uid_validity    integer, -- Needed for IMAP
+            unique(creation_user, name)
+    );
+        </PRE
+><P
+>&#13;      A "mailbox" is what other systems would term "folders." 
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    create table wm_messages (
+            msg_id          integer primary key,
+        mailbox_id  integer references wm_mailboxes,
+            body            clob,
+        -- plain text portions of MIME message; empty if 
+        -- entire message is of type text/*.
+        mime_text   clob,
+            message_id      varchar(500), -- RFC822 Message-ID field
+        msg_size    integer,
+        date_value  date,
+        subject_value   varchar(150),
+        to_value    varchar(150),
+        from_value  varchar(150),
+        seen_p      char(1) default 'f' check(seen_p in ('t','f')),
+        answered_p  char(1) default 'f' check(answered_p in ('t','f')),
+        flagged_p   char(1) default 'f' check(flagged_p in ('t','f')),
+        deleted_p   char(1) default 'f' check(deleted_p in ('t','f')),
+        draft_p     char(1) default 'f' check(draft_p in ('t','f')),
+        recent_p    char(1) default 't' check(recent_p in ('t','f'))
+    );
+    
+    create index wm_messages_by_message_id on wm_messages(message_id);
+        </PRE
+><P
+>&#13;      This is the primary message table. It stores the body of the
+      message, a parsed plain-text version with markers for attachments
+      if this is a multipart MIME message, the mailbox that this message
+      is currently filed in, a denormalized Message-ID field for easy
+      reference by Message ID, and yet another ID field for IMAP
+      bookkeeping. The message_id field is not unique, since the same
+      message may have been received multiple times.</P
+><P
+>We also store the 4 header columns which are needed for the mailbox
+      index view in the wm_messages table. These were seperated from the
+      other headers which are stored in a seperate table (see below)
+      because previous Webmail installations experienced problems with
+      slow index views. The
+      net effect of this is immediately visible: while index views of
+      mailboxes with 500 messages used to be perceptively slow, they are
+      now almost instantaneous with over 2000 messages. This is because
+      we no longer have to join the <TT
+CLASS="computeroutput"
+>wm_headers</TT
+> table four
+      times with the <TT
+CLASS="computeroutput"
+>wm_messages</TT
+> table to get all the needed
+      headers for the index view. This change should vastly improve the
+      scalability of Webmail.</P
+><P
+>The mapping of messages to mailboxes was also changed from the
+      previous Webmail implementation; instead of using a mapping table,
+      we use the mailbox_id column in the wm_messages table. This
+      eliminates an extra join in a good number of queries, although it
+      gives up the possibility of mapping messages to multiple mailboxes
+      (which was a feature that was not utilized in the previous Webmail
+      anyhow). One possibility to regain this functionality would be to
+      have a column in wm_messages which references a seperate table
+      which would contain "common" messages which multiple users could
+      view as normal messages. Such a feature could save resources for
+      intra-Webmail spam, and may be implemented in the future if deemed
+      necessary.</P
+><PRE
+CLASS="programlisting"
+>    
+    -- Stores attachments for MIME messages.
+    create table wm_attachments (
+            msg_id          not null references wm_messages,
+            -- File name associated with attachment.
+            filename        varchar(600) not null,
+            -- MIME type of attachment.
+            content_type    varchar(100),
+            data            blob,
+            primary key (msg_id, filename)
+    );
+        </PRE
+><P
+>&#13;      This table stores MIME attachments and associated information. 
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Headers for a message.
+    create table wm_headers (
+            msg_id          integer not null references wm_messages,
+            -- field name as specified in the email
+            name            varchar(100) not null,
+            value           varchar(4000),
+            -- original order of headers
+            sort_order      integer not null
+    );
+    
+    create index wm_headers_by_msg_id_name on wm_headers (msg_id, lower_name);
+        </PRE
+><P
+>&#13;      Headers are stored separately from the message to aid in searching.
+      The original ordering of the headers is maintained, both so
+      that we can recreate the header block and because order is
+      significant for certain fields. 
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Table for recording messages that we failed to parse for whatever reason.
+    create table wm_parse_errors (
+            filename                varchar(255) primary key not null, -- message queue file
+            error_message           varchar(4000),
+            first_parse_attempt     date default sysdate not null
+    );
+        </PRE
+><P
+>&#13;      If an error occurs while attempting to parse a message, we store a
+      record of the error in this log for the administrator to review.
+      Only the first occurrence of an error is logged for any file, to
+      prevent hundreds of identical error messages from clogging the log.
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Used for storing attachments for outgoing messages.
+    -- Should be cleaned out periodically.
+    
+    create sequence wm_outgoing_msg_id_sequence;
+    
+    create table wm_outgoing_messages (
+            outgoing_msg_id         integer not null primary key,
+            body                    clob,
+            composed_message        clob,
+            creation_date           date default sysdate not null,
+            creation_user           not null references users
+    );
+    
+    create table wm_outgoing_headers (
+            outgoing_msg_id         integer not null references wm_outgoing_messages on delete cascade,
+            name                    varchar(100) not null,
+            value                   varchar(4000),
+            sort_order              integer not null
+    );
+    
+    create unique index wm_outgoing_headers_idx on wm_outgoing_headers (outgoing_msg_id, name);
+    
+    create sequence wm_outgoing_parts_sequence;
+    create table wm_outgoing_message_parts (
+            outgoing_msg_id         integer not null references wm_outgoing_messages on delete cascade,
+            data                    blob,
+            filename                varchar(600) not null,
+            content_type            varchar(100), -- mime type of data
+            sort_order              integer not null,
+            primary key (outgoing_msg_id, sort_order)
+    );
+    
+    -- Create a job to clean up orphaned outgoing messages every day.
+    create or replace procedure wm_cleanup_outgoing_msgs as
+    begin
+      delete from wm_outgoing_messages
+        where creation_date &#60; sysdate - 1;
+    end;
+    /
+    
+    declare
+      job number;
+    begin
+      dbms_job.submit(job, 'wm_cleanup_outgoing_msgs;',
+                      interval =&#62; 'sysdate + 1');
+    end;
+    /
+        </PRE
+><P
+>&#13;      When composing messages for sending, the unsent message and any
+      attachments are stored in the database. When the message is sent, a
+      MIME message is composed consisting of the text of the message
+      followed by any attachments (there is currently no facility to
+      intersperse attachments with text). Instead of deleting this as
+      soon as it is sent, we delete old messages daily, allowing users
+      the chance to hit back on their browsers if they wish to resend the
+      previously composed messages. 
+    </P
+><P
+>Unsent outgoing attachments could as well be stored in the
+      filesystem, but it is easier to manage them when they are all
+      contained within the database.</P
+><PRE
+CLASS="programlisting"
+>    
+    -- PL/SQL bindings for Java procedures
+    create or replace procedure wm_process_queue (queuedir IN VARCHAR)
+    as language java
+    name 'com.arsdigita.mail.MessageParser.processQueue(java.lang.String)';
+    /
+    
+    create or replace procedure wm_compose_message (outgoing_msg_id IN NUMBER)
+    as language java
+    name 'com.arsdigita.mail.MessageComposer.composeMimeMessage(int)';
+    /
+        </PRE
+><P
+>&#13;      These PL/SQL bindings for Java procedures are the heart of the
+      system. <TT
+CLASS="computeroutput"
+>wm_process_queue</TT
+> attempts to parse every file
+      in the given directory as an email message, deliver it to a webmail
+      user, and delete the file. It is scheduled with AolServer to run
+      every minute. Various bugs in Oracle's <TT
+CLASS="computeroutput"
+>dbms_job</TT
+>
+      package have proven that this is a more reliable scheduling system.
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- Trigger to delete subsidiary rows when a message is deleted.
+    create or replace trigger wm_messages_delete_trigger
+    before delete on wm_messages
+    for each row
+    begin
+      delete from wm_headers where msg_id = :old.msg_id;
+      delete from wm_attachments where msg_id = :old.msg_id;
+    end;
+    /
+        </PRE
+><P
+>&#13;      This trigger makes deleting messages easy; deleting from
+      <TT
+CLASS="computeroutput"
+>wm_messages</TT
+> will also delete the appropriate rows from
+      any subsidiary tables. 
+    </P
+><PRE
+CLASS="programlisting"
+>    
+    -- interMedia index on body of message
+    create index wm_ctx_index on wm_messages (body)
+    indextype is ctxsys.context parameters ('memory 250M');
+    
+    -- INSO filtered interMedia index for attachments.
+    create index wm_att_ctx_index on wm_attachments (data)
+    indextype is ctxsys.context parameters ('memory 250M filter ctxsys.inso_filter format column format');
+    
+    -- Trigger to update format column for INSO index.
+    create or replace trigger wm_att_format_tr before insert on wm_attachments
+    for each row
+    declare
+      content_type  varchar(100);
+    begin
+      content_type := lower(:new.content_type);
+      if content_type like 'text/%' or content_type like 'application/msword%' then
+        :new.format := 'text';
+      else
+        :new.format := 'binary';
+      end if;
+    end;
+    /
+    
+    -- Resync the interMedia index every hour.
+    declare
+      job number;
+    begin
+      dbms_job.submit(job, 'ctx_ddl.sync_index(''wm_ctx_index'');',
+                      interval =&#62; 'sysdate + 1/24');
+      dbms_job.submit(job, 'ctx_ddl.sync_index(''wm_att_ctx_index'');',
+                      interval =&#62; 'sysdate + 1/24');
+    end;
+    /
+        </PRE
+><P
+>&#13;      These indices and triggers enable full-text searches over messages.
+      An INSO filtered index is also created to allow full-text searches
+      over any attachments which contain text, including formatted
+      documents. 
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-legal-transactions"
+>2.2.7. Legal Transactions</A
+></H2
+><P
+>&#13;
+      <DIV
+CLASS="variablelist"
+><DL
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>/webmail/admin/</B
+></DT
+><DD
+><P
+CLASS="listitem"
+>The following legal transactions can occur from the events
+	      administration pages located under /admin/webmail/:</P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>domains</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>Domains may be created and deleted.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>The account size limit may be set for the domain.</P
+></LI
+></UL
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>accounts</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>Email accounts may be created or deleted.</P
+></LI
+></UL
+></DD
+></DL
+></DIV
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>/webmail/</B
+></DT
+><DD
+><P
+CLASS="listitem"
+>The following legal transactions can occur from the events
+	      administration pages located under /webmail/:</P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>messages</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>Messages may be viewed, re-filed, or deleted.</P
+></LI
+></UL
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>composing messages</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>New messages may be composed.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Attachments may be added.</P
+></LI
+></UL
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>folders</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>Folders may be created.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Folders may be emptied of messages (their contents deleted).</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>User created folders may be renamed and deleted(including contents).</P
+></LI
+></UL
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>filters</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>Views may be created, edited, and deleted.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Action filters may be created, edited, and deleted.</P
+></LI
+></UL
+></DD
+><DT
+CLASS="listitem"
+><B
+CLASS="phrase"
+>preferences</B
+></DT
+><DD
+><UL
+><LI
+><P
+CLASS="listitem"
+>User preferences may be edited.</P
+></LI
+></UL
+></DD
+></DL
+></DIV
+></DD
+></DL
+></DIV
+>
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-api"
+>2.2.8. API</A
+></H2
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="design-plsql-api"
+>2.2.8.1. PL/SQL Procedures</A
+></H3
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>wm_process_queue (queuedir IN VARCHAR)</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Processes the
+	      mail queue directory and inserts messages into the database
+	      (scheduled to run every minute by default)</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>wm_compose_message (outgoing_msg_id IN NUMBER)</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Given
+	      an outgoing_msg_id, updates the wm_outgoing_messages table and sets
+	      the composed_message column to a complete message (including mail
+	      headers) which is ready to send.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="design-tcl-api"
+>2.2.8.2. Tcl Procedures:</A
+></H3
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc ad_acs_webmail_id_mem {}</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      This is for getting
+	      the package id so we can use ad_parameter in this file.</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_add_user { user_id username short_name }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      Creates a new webmail account for the given user.</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_header_display { msg_id 
+	      header_display_style user_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Creates a string of "header: value" pairs</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_quote_message { author msg_text }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>quotes message with "&#62;" on each line</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_msg_permission { msg_id user_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Does user_id have permission to access msg_id? Returns 0
+	      or 1</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_mailbox_permission { mailbox_id user_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      Does user_id have permission to access mailbox_id? Returns 0 or
+	      1
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_get_mime_part { }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Processes requests for message attachments</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_return_error { errmsg }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Just redirects to the webmail-error page</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_move_to_next { msg_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Redirects to the
+	      next message in the "current_messages" client property
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_get_preference { user_id preference }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Gets specified preference for specified user from the
+	      wm_preferences table</P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc select_default_mailbox { user_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> sets the
+	      default mailbox (INBOX) using ad_set_client_property
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_format_for_seen_or_deleted { seen_p deleted_p str }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>Format an element differently for read or deleted
+	      messages.
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc accumulate_msg_id { msg_id seen_p deleted_p }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      collects message data for navigation in message.tcl
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_likefy { string }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> escapes % and \ with \
+	      for an Oracle "like" clause
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_build_view_sql { user_id view_id }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Builds
+	      the inner part of the complex index-view.tcl query for the
+	      specified view. If you pass view_id as -1, it will attempt to get
+	      the view from the client's browser properties (used for the "Custom
+	      View")
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc create_read_string { comp_string }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Creates
+	      checkboxes for whether a message is read Helper to
+	      wm_create_filter_form
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc create_constraint_string { comp_object comp_type
+	comp_string i }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Creates constraint inputs Helper to
+	      wm_create_filter_form
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc create_age_string { comp_type comp_string }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      Creates an age input constraint Helper for
+	      wm_create_filter_form
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_create_filter_form { user_id edit_filter_id
+	      {format long} }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Creates strings for displaying the form for
+	      editing a filter view. Specify 0 for edit_filter_id to have an
+	      empty form pass format "flat" to have the mailbox option printed 5
+	      to a row (default is 2)
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc wm_build_index_view { mailbox_id view_id mailbox_name
+	msg_per_page page_num orderby view_sql }</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Creates a table of
+	      the messages in the current mailbox or view See index.tcl and
+	      index-view.tcl for use examples
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc qmail {to from subject body {extraheaders {}}}</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+>&#13;	      Creates a message and injects it into qmail. This proc was
+	      originally in qmail.tcl, but since qmail.tcl is no longer
+	      distributed with ACS 4.0, I added it here.&#60;
+	    </P
+></DD
+><DT
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>ad_proc qmail_send_complete_message {from msg}</TT
+></DT
+><DD
+><P
+CLASS="listitem"
+> Injects
+	      a full formed message into qmail</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-user-interface"
+>2.2.9. User Interface</A
+></H2
+><P
+>&#13;
+      The user interface for webmail includes:
+      <UL
+><LI
+><P
+CLASS="listitem"
+>An interface for the user:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Browsing available messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Reading specific messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Composing outgoing messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>A side nav-bar for navigating between the different webmail
+		functions</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Preferences for customizing the user interface and
+		functionality of the application including: 
+
+		<UL
+><LI
+><P
+CLASS="listitem"
+>Setting the number of messages displayed at once</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Setting the refresh rate of the mailbox</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Creating a signature</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Setting the from name and reply-to header fields</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Choosing to have messages forwarded to another email
+		      address</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Automatically saving messages</P
+></LI
+></UL
+>
+	      </P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Creating, editing, deleting, and displaying different
+		views</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Creating, editing, deleting, and displaying different
+		folders</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Creating, editing, deleting, and displaying different filter
+		actions</P
+></LI
+></UL
+></LI
+><LI
+><P
+CLASS="listitem"
+>An interface for the administrator:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Choosing domains handled by Webmail</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Adding and deleting users in those domains</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Viewing a list of recent Webmail errors</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Setting the account size allowed for users</P
+></LI
+></UL
+></LI
+></UL
+></P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-configurationparameters"
+>2.2.10. Configuration/Parameters</A
+></H2
+><P
+>Please refer to the <A
+HREF="acs-admin-guide.html#install"
+>Installing WebMail ACS 4.0</A
+> doc for 
+      installation and configuration.  It 
+      covers configuring qmail, loading the data-model, the java files,
+      and testing and configuring the system. 
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-future-improvementsareas-of-likely-change"
+>2.2.11. Future Improvements/Areas of Likely Change</A
+></H2
+><P
+>Future improvements will possibly include POP3 and/or IMAP
+      access, voice-xml access to messages, and LDAP interface.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="design-authors"
+>2.2.12. Authors</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+>System creator <A
+HREF="mailto:jsc@arsdigita.com"
+TARGET="_top"
+>Jin
+	    Choi</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>System owner <A
+HREF="mailto: erik@arsdigita.com"
+TARGET="_top"
+>Erik
+	    Bielefeldt</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Documentation author <A
+HREF="mailto:jsc@arsdigita.com"
+TARGET="_top"
+>Jin
+	    Choi</A
+>, <A
+HREF="mailto: erik@arsdigita.com"
+TARGET="_top"
+>Erik
+	    Bielefeldt</A
+></P
+></LI
+></UL
+><P
+>&#13;      <A
+HREF="mailto: erik@arsdigita.com"
+TARGET="_top"
+>Erik Bielefeldt</A
+>
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="dev-guide.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Developer's guide</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="dev-guide.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>&nbsp;</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

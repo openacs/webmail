@@ -1,0 +1,54 @@
+# /webmail/www/parts/index.vuh
+
+ad_page_contract {
+    Serves attachments.  The address should be "parts/filename?msg_id=xxx&att_id=xxx."
+    
+    @author Erik Bielefeldt (erik@arsdigita.com)
+    @creation-date 2000-12-27
+    @cvs-id $Id$    
+} {
+    { att_id:integer 0 }
+    { msg_id:integer 0 }
+}
+
+set url [ad_conn url]
+
+if { ![regexp {[wm_get_mount_point]parts/([^?]+)$} $url match filename] } {
+    set filename "attachment"
+}
+
+set user_id [ad_verify_and_get_user_id]
+if { ![wm_msg_permission $msg_id $user_id] } {
+    ad_return_error "Permission Denied" "You do not have permission to retrieve this message part."
+    return
+}
+
+set content_type [db_string content_type {
+    SELECT content_type
+    FROM wm_attachments
+    WHERE att_id = :att_id 
+    AND msg_id = :msg_id } -default ""]
+
+# We write the attachment to the filesystem first, so as not 
+# to tie up a db handle while serving it.
+set filename "/tmp/wm-$att_id"
+
+with_catch errmsg {
+    db_with_handle db {
+	ns_ora blob_get_file $db "
+	SELECT data
+	FROM wm_attachments
+	WHERE att_id = '$att_id'
+	AND msg_id = '$msg_id'
+	" "$filename"
+    } 
+} {
+    ad_return_error "No attachment found" "The specified attachment does not exists."
+    return
+}
+db_release_unused_handles
+ns_log Notice "Serving $filename of content-type $content_type"
+ns_returnfile 200 $content_type "$filename"
+ns_unlink -nocomplain $filename
+
+

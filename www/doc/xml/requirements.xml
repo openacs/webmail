@@ -1,0 +1,335 @@
+<sect1 id="requirements" xreflabel="Webmail Application Requirements">
+  <title>Webmail Application Requirements</title>
+
+  <para>
+    by <ulink url="mailto:erik@arsdigita.com">Erik Bielefeldt</ulink> 
+  </para>
+
+  <sect2 id="requirements-introduction" xreflabel="Introduction">
+    <title>Introduction</title>
+
+    <para>This document describes the requirements for the ACS Webmail
+      application. The Webmail application provides a web-based email
+      service.</para>
+  </sect2>
+
+  <sect2 id="requirements-vision-statement" xreflabel="Vision Statement">
+    <title>Vision Statement</title>
+
+    <para>Web-based email is a convenient and highly accessible way of
+      communicating over the internet. Because web-based email only
+      requires a browser, it is accessible from almost any connected
+      computer, and because all the messages are stored on a server, it
+      is easy for the user to check his or her mail from a number of
+      different machines. The Webmail application aims to achieve the
+      following goals:</para>
+
+    <itemizedlist>
+      <listitem><para>Provide a reliable web-based email service</para></listitem>
+
+      <listitem><para>Provide a simple, but powerful 
+	  user-interface</para></listitem>
+
+      <listitem><para>Provide a service competitive with other commercial web-based
+	  email services</para></listitem>
+
+      <listitem><para>Provide a scalable data-model and efficient 
+	  implementation</para></listitem>
+
+      <listitem><para>Integerate seemlessly with the ACS core (and other
+	  modules)</para></listitem>
+    </itemizedlist>
+
+    <para><emphasis>See <xref linkend="requirements-competitive-analysis"></xref>
+	for further discussion of what Webmail should and should not provide 
+	in the future.</emphasis>
+    </para>
+  </sect2>
+
+  <sect2 id="requirements-systemapplication-overview" xreflabel="System/Application Overview">
+    <title>System/Application Overview</title>
+
+    <para>The Webmail application consists of:</para>
+
+    <itemizedlist>
+      <listitem><para>An interface for the user including: 
+
+	  <itemizedlist>
+	    <listitem><para>Browsing available messages</para></listitem>
+
+	    <listitem><para>Reading specific messages</para></listitem>
+
+	    <listitem><para>Composing outgoing messages</para></listitem>
+
+	    <listitem><para>Customizing the user interface and functionality of the
+		application</para></listitem>
+	  </itemizedlist>
+	</para></listitem>
+
+      <listitem><para>An interface for the administrator which includes: 
+
+	  <itemizedlist>
+	    <listitem><para>Creating and deleting domains handled by Webmail</para></listitem>
+
+	    <listitem><para>Adding and deleting users in those domains</para></listitem>
+
+	    <listitem><para>Viewing a list of recent Webmail errors</para></listitem>
+	  </itemizedlist>
+	</para></listitem>
+    </itemizedlist>
+  </sect2>
+
+  <sect2 id="requirements-use-cases-and-user-scenarios" xreflabel="Use-cases and User-scenarios">
+    <title>Use-cases and User-scenarios</title>
+
+    <para>The Webmail application is intended to provide ArsDigita
+      employees and community members a web-based email service. Users
+      would be community members who are looking for a convenient
+      mail-service which would seamlessly integrate with other ACS tools,
+      or people looking to escape highly commercialized mail-systems like
+      Hotmail or Yahoo! Mail.</para>
+  </sect2>
+
+  <sect2 id="requirements-competitive-analysis" xreflabel="Competitive Analysis">
+    <title>Competitive Analysis</title>
+
+    <para>As a pure web-based email system, Webmail will equal, and
+      eventually surpass Hotmail, Yahoo! Mail, and other commercial
+      web-based email services in usability and functionality.</para>
+
+    <para>In comparison to other mail solutions as a whole (this includes
+      IMAP, POP, and custom solutions), however, there is still a lot
+      lacking. The user-interfaces of web-based email systems tend to be
+      somewhat more cumbersome than specialized mail clients like
+      Microsoft Outlook and Netscape Messenger. Their strength is their
+      accessibility--all that is needed is a web browser. The optimal
+      solution for an individual, however, might a combination of both: a
+      specialized client which can be run on the user's primary machine
+      and web-based access for those times when that individual does not
+      have access to the primary machine. There are already systems which
+      allow this, including several free IMAP versions. The advantage of
+      IMAP systems is that they are based on a standard protocol which
+      allows users to choose their client application. They also allow
+      users to store messages on the server rather than on the client,
+      thus allowing the messages to be accesible from numerous
+      locations.</para>
+
+    <para>The question facing ArsDigita is what sort of a solution would
+      we like to be able to provide? Webmail certainly offers basic email
+      functionality to any site which chooses to install it, and this is
+      probably enough for most casual users, but it does not offer a
+      complete solution for a business looking to provide their employees
+      or customers with a high-powered email system for business use.
+      There are several options ArsDigita can take in continuing webmail
+      development: (arranged from easiest to most difficult to
+      implement)</para>
+
+    <itemizedlist>
+      <listitem><para>Continue improvements on the current system--keeping it
+	  web-based but trying to offer the most powerful, flexible features
+	  of any web-based system. For anyone who moves around a lot,
+	  Web-based solutions are the most accessible. With continued
+	  improvement, the user interface could be made to match that of
+	  client-based solutions.</para></listitem>
+
+      <listitem><para>Integrate the ACS with an existing IMAP solution, relying on
+	  their product for functionality (with some customizations), but
+	  providing a seemless user-experience and crossover between their
+	  system and other ACS functionalities</para></listitem>
+
+      <listitem><para>Develop a custom server (probably IMAP) for ACS</para></listitem>
+    </itemizedlist><para>
+
+      Email is such a core part of building a community that I believe
+      that ArsDigita must provide some form of it. Whether it is worth
+      the resources to provide something beyond the current web-based
+      system still needs to be assessed.
+    </para></sect2>
+
+  <sect2 id="requirements-related-links" xreflabel="Related Links">
+    <title>Related Links</title>
+
+    <itemizedlist>
+      <listitem><para><xref linkend="design"></xref></para></listitem>
+      <listitem><para><xref linkend="install"></xref></para></listitem>
+    </itemizedlist>
+  </sect2>
+
+  <sect2 id="requirements--requirements-data-model" xreflabel="Requirements: Data Model">
+    <title>Requirements: Data Model</title>
+
+    <itemizedlist>
+      <listitem><para><phrase>10.0 Domains</phrase></para>
+	  <para><phrase>10.1</phrase> Domains have a full domain name</para>
+	  <para><phrase>10.2</phrase> Domains have a short name for internal use</para>
+      </listitem>
+
+      <listitem><para><phrase>20.0 Users</phrase></para>
+	  <para><phrase>20.1</phrase> Users have an email user name</para>
+	  <para><phrase>20.2</phrase> Users are associated with a domain</para>
+	  <para><phrase>20.3</phrase> Users have a referenced column in the users table</para>
+	</listitem>
+
+      <listitem><para><phrase>30.0 Mailboxes</phrase></para>
+	  <para><phrase>30.1</phrase> Mailboxes are associated with users</para>
+	  <para><phrase>30.2</phrase> Mailboxes are uniquely identified by name and
+	  associated user</para>
+      </listitem>
+
+      <listitem><para><phrase>40.0 Incoming Messages</phrase></para>
+	  <para><phrase>40.1</phrase> Messages are associated with mailboxes (and hence to
+	  users)</para>
+	  <para><phrase>40.2</phrase> Messages have various flags to record their states
+	  (deleted, answered, read, draft, etc.)</para>
+	  <para><phrase>40.3</phrase> Messages have headers associated with them which keep
+	  track of their header information</para>
+	  <para><phrase>40.4</phrase> Messages have attachments associated with them which
+	  store any data received as an attachment</para>
+      </listitem>
+
+      <listitem><para><phrase>50.0 Outgoing Messages</phrase></para>
+	  <para><phrase>50.1</phrase> Messages are associated with the composing user</para>
+	  <para><phrase>50.2</phrase> Messages have headers associated with them which keep
+	  track of their header information</para>
+	  <para><phrase>50.3</phrase> Messages have attachments associated with them which
+	  store any data received as an attachment</para>
+      </listitem>
+    </itemizedlist>
+  </sect2>
+
+  <sect2 id="requirements--requirements-webmail-administration" xreflabel="Requirements: Webmail Administration">
+    <title>Requirements: Webmail Administration</title>
+
+    <itemizedlist>
+      <listitem><para><phrase>60. 0 Creating Domains</phrase></para>
+	  <para><phrase>60.1</phrase> The administrator may create or delete domains for
+	  which Webmail will accept mail
+	</para></listitem>
+
+      <listitem><para><phrase>70.0 Creating Webmail Accounts</phrase></para>
+	  <para><phrase>70.1</phrase> The administrator may create or delete user Webmail
+	  accounts</para>
+	  <para><phrase>70.2</phrase> The administrator may set the size limit(in mb) of
+	  Webmail accounts
+	</para></listitem>
+    </itemizedlist>
+  </sect2>
+
+  <sect2 id="requirements--requirements-webmail-user-interface" xreflabel="Requirements: Webmail User Interface">
+    <title>Requirements: Webmail User Interface</title>
+
+    <itemizedlist>
+      <listitem><para><phrase>80.0 Browsing Messages</phrase></para>
+	  <para><phrase>80.1</phrase> The user may browse any of his or her existing
+	  mailboxes</para>
+	  <para><phrase>80.2</phrase> Messages are listed by address, subject, size, whether
+	  it has been read, and time</para>
+	  <para><phrase>80.3</phrase> The user may sort the messages by any of the above
+	  columns
+	</para></listitem>
+
+      <listitem><para><phrase>90.0 Reading Messages</phrase></para>
+	  <para><phrase>90.1</phrase> The user can view the body and certain headers of the
+	  message</para>
+	  <para><phrase>90.2</phrase> The user can move, delete, forward, or reply to the
+	  message</para>
+	  <para><phrase>90.3</phrase> The user may skip to the next, next unread, previous,
+	  and previous unread messages, or to the browsing view (index)
+	</para></listitem>
+
+      <listitem><para><phrase>100.0 Composing Messages</phrase></para>
+	  <para><phrase>100.1</phrase> The user may enter the following fields: recipient,
+	  cc, bcc, subject, body</para>
+	  <para><phrase>100.2</phrase> Only the recipient is required</para>
+	  <para><phrase>100.3</phrase> The user may upload and attach files to the
+	  message</para>
+	  <para><phrase>100.4</phrase> The user may attach a signature</para>
+	  <para><phrase>100.5</phrase> The user may select whether to allow html tags in the
+	  message</para>
+	  <para><phrase>100.6</phrase> The user may view an html preview of their
+	  message
+	</para></listitem>
+
+      <listitem><para><phrase>110.0 Filtering Messages</phrase></para>
+	  <para><phrase>110.1</phrase> The user may filter messages by any message header,
+	  body, status, mailbox, and age</para>
+	  <para><phrase>110.2</phrase> Filters can be applied to incoming messages and have
+	  an associated action executed upon that message</para>
+
+	  <itemizedlist>
+	    <listitem><para><phrase>110.2.1</phrase> Actions include refiling, deleting, and
+		forwarding
+	      </para></listitem>
+	  </itemizedlist>
+
+	  <para><phrase>110.3</phrase> Filters can be used to generate views based on the
+	  filter constraints</para>
+	  
+
+	  <itemizedlist>
+	    <listitem><para><phrase>110.3.1</phrase> Views can be saved, edited, and applied
+	      </para></listitem>
+
+	    <listitem><para><phrase>110.3.2</phrase> Views can be created on the fly as dynamic
+		searches
+	      </para></listitem>
+	  </itemizedlist>
+      </listitem>
+
+      <listitem><para><phrase>120.0 Security</phrase></para>
+	  <para><phrase>120.1</phrase> The user may only access messages in his or her own
+	  mailboxes -- this includes reading, browsing, responding to, and
+	  forwarding</para>
+	  <para><phrase>120.2</phrase> The user may only modify or delete folders that he or
+	  she created</para>
+	  <para><phrase>120.3</phrase> The user may only modify or delete filters that he or
+	  she created</para>
+	  <para><phrase>120.4</phrase> The user's mail is not visible to any other user,
+	  including all admins
+	</para></listitem>
+    </itemizedlist>
+  </sect2>
+
+  <sect2 id="requirements-revision-history" xreflabel="Revision History">
+    <title>Revision History</title>
+
+    <informaltable><tgroup cols="4">
+	<thead>
+	  <row>
+	    <entry align="center">Document Revision #</entry>
+	    <entry align="center">Action Taken, Notes</entry>
+	    <entry align="center">When?</entry>
+	    <entry align="center">By Whom?</entry>
+	  </row>
+	</thead>
+
+	<tbody>
+	  <row>
+	    <entry>0.1</entry>
+	    <entry>Creation</entry>
+	    <entry>09/04/2000</entry>
+	    <entry>Erik Bielefeldt</entry>
+	  </row>
+
+	  <row>
+	    <entry>0.2</entry>
+	    <entry>Fixed a few errors and added new features</entry>
+	    <entry>11/10/2000</entry>
+	    <entry>Erik Bielefeldt</entry>
+	  </row>
+	</tbody></tgroup></informaltable>
+
+    <para><ulink url="mailto:erik@arsdigita.com">erik@arsdigita.com</ulink></para>
+    <para>
+      Last modified: $Date$
+    </para>
+  </sect2>
+</sect1>
+
+
+
+<!--
+ Local Variables:
+ sgml-parent-document: ("index.xml" "chapter" "sect1")
+ End:
+-->

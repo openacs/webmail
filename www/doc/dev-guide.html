@@ -1,0 +1,966 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Developer's guide</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="aD Hack of: Modular DocBook HTML Stylesheet Version 1.60"><LINK
+REL="HOME"
+TITLE="Webmail"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="ACS Administrator's guide"
+HREF="acs-admin-guide.html"><LINK
+REL="NEXT"
+TITLE="Webmail Design Document"
+HREF="design.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="ad-doc.css"></HEAD
+><BODY
+CLASS="chapter"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Webmail</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="acs-admin-guide.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="design.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="chapter"
+><H1
+><A
+NAME="dev-guide"
+>Chapter 2. Developer's guide</A
+></H1
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="requirements"
+>2.1. Webmail Application Requirements</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>2.1.1. <A
+HREF="dev-guide.html#requirements-introduction"
+>Introduction</A
+></DT
+><DT
+>2.1.2. <A
+HREF="dev-guide.html#requirements-vision-statement"
+>Vision Statement</A
+></DT
+><DT
+>2.1.3. <A
+HREF="dev-guide.html#requirements-systemapplication-overview"
+>System/Application Overview</A
+></DT
+><DT
+>2.1.4. <A
+HREF="dev-guide.html#requirements-use-cases-and-user-scenarios"
+>Use-cases and User-scenarios</A
+></DT
+><DT
+>2.1.5. <A
+HREF="dev-guide.html#requirements-competitive-analysis"
+>Competitive Analysis</A
+></DT
+><DT
+>2.1.6. <A
+HREF="dev-guide.html#requirements-related-links"
+>Related Links</A
+></DT
+><DT
+>2.1.7. <A
+HREF="dev-guide.html#requirements--requirements-data-model"
+>Requirements: Data Model</A
+></DT
+><DT
+>2.1.8. <A
+HREF="dev-guide.html#requirements--requirements-webmail-administration"
+>Requirements: Webmail Administration</A
+></DT
+><DT
+>2.1.9. <A
+HREF="dev-guide.html#requirements--requirements-webmail-user-interface"
+>Requirements: Webmail User Interface</A
+></DT
+><DT
+>2.1.10. <A
+HREF="dev-guide.html#requirements-revision-history"
+>Revision History</A
+></DT
+></DL
+></DIV
+><P
+>&#13;    by <A
+HREF="mailto:erik@arsdigita.com"
+TARGET="_top"
+>Erik Bielefeldt</A
+> 
+  </P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-introduction"
+>2.1.1. Introduction</A
+></H2
+><P
+>This document describes the requirements for the ACS Webmail
+      application. The Webmail application provides a web-based email
+      service.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-vision-statement"
+>2.1.2. Vision Statement</A
+></H2
+><P
+>Web-based email is a convenient and highly accessible way of
+      communicating over the internet. Because web-based email only
+      requires a browser, it is accessible from almost any connected
+      computer, and because all the messages are stored on a server, it
+      is easy for the user to check his or her mail from a number of
+      different machines. The Webmail application aims to achieve the
+      following goals:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Provide a reliable web-based email service</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Provide a simple, but powerful 
+	  user-interface</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Provide a service competitive with other commercial web-based
+	  email services</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Provide a scalable data-model and efficient 
+	  implementation</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Integerate seemlessly with the ACS core (and other
+	  modules)</P
+></LI
+></UL
+><P
+><I
+CLASS="emphasis"
+>See <A
+HREF="dev-guide.html#requirements-competitive-analysis"
+>Competitive Analysis</A
+>
+	for further discussion of what Webmail should and should not provide 
+	in the future.</I
+>
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-systemapplication-overview"
+>2.1.3. System/Application Overview</A
+></H2
+><P
+>The Webmail application consists of:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>An interface for the user including: 
+
+	  <UL
+><LI
+><P
+CLASS="listitem"
+>Browsing available messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Reading specific messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Composing outgoing messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Customizing the user interface and functionality of the
+		application</P
+></LI
+></UL
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>An interface for the administrator which includes: 
+
+	  <UL
+><LI
+><P
+CLASS="listitem"
+>Creating and deleting domains handled by Webmail</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Adding and deleting users in those domains</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Viewing a list of recent Webmail errors</P
+></LI
+></UL
+>
+	</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-use-cases-and-user-scenarios"
+>2.1.4. Use-cases and User-scenarios</A
+></H2
+><P
+>The Webmail application is intended to provide ArsDigita
+      employees and community members a web-based email service. Users
+      would be community members who are looking for a convenient
+      mail-service which would seamlessly integrate with other ACS tools,
+      or people looking to escape highly commercialized mail-systems like
+      Hotmail or Yahoo! Mail.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-competitive-analysis"
+>2.1.5. Competitive Analysis</A
+></H2
+><P
+>As a pure web-based email system, Webmail will equal, and
+      eventually surpass Hotmail, Yahoo! Mail, and other commercial
+      web-based email services in usability and functionality.</P
+><P
+>In comparison to other mail solutions as a whole (this includes
+      IMAP, POP, and custom solutions), however, there is still a lot
+      lacking. The user-interfaces of web-based email systems tend to be
+      somewhat more cumbersome than specialized mail clients like
+      Microsoft Outlook and Netscape Messenger. Their strength is their
+      accessibility--all that is needed is a web browser. The optimal
+      solution for an individual, however, might a combination of both: a
+      specialized client which can be run on the user's primary machine
+      and web-based access for those times when that individual does not
+      have access to the primary machine. There are already systems which
+      allow this, including several free IMAP versions. The advantage of
+      IMAP systems is that they are based on a standard protocol which
+      allows users to choose their client application. They also allow
+      users to store messages on the server rather than on the client,
+      thus allowing the messages to be accesible from numerous
+      locations.</P
+><P
+>The question facing ArsDigita is what sort of a solution would
+      we like to be able to provide? Webmail certainly offers basic email
+      functionality to any site which chooses to install it, and this is
+      probably enough for most casual users, but it does not offer a
+      complete solution for a business looking to provide their employees
+      or customers with a high-powered email system for business use.
+      There are several options ArsDigita can take in continuing webmail
+      development: (arranged from easiest to most difficult to
+      implement)</P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Continue improvements on the current system--keeping it
+	  web-based but trying to offer the most powerful, flexible features
+	  of any web-based system. For anyone who moves around a lot,
+	  Web-based solutions are the most accessible. With continued
+	  improvement, the user interface could be made to match that of
+	  client-based solutions.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Integrate the ACS with an existing IMAP solution, relying on
+	  their product for functionality (with some customizations), but
+	  providing a seemless user-experience and crossover between their
+	  system and other ACS functionalities</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Develop a custom server (probably IMAP) for ACS</P
+></LI
+></UL
+><P
+>&#13;
+      Email is such a core part of building a community that I believe
+      that ArsDigita must provide some form of it. Whether it is worth
+      the resources to provide something beyond the current web-based
+      system still needs to be assessed.
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-related-links"
+>2.1.6. Related Links</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+><A
+HREF="design.html"
+>Webmail Design Document</A
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+><A
+HREF="acs-admin-guide.html#install"
+>Installing WebMail ACS 4.0</A
+></P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements--requirements-data-model"
+>2.1.7. Requirements: Data Model</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>10.0 Domains</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>10.1</B
+> Domains have a full domain name</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>10.2</B
+> Domains have a short name for internal use</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>20.0 Users</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>20.1</B
+> Users have an email user name</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>20.2</B
+> Users are associated with a domain</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>20.3</B
+> Users have a referenced column in the users table</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>30.0 Mailboxes</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>30.1</B
+> Mailboxes are associated with users</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>30.2</B
+> Mailboxes are uniquely identified by name and
+	  associated user</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>40.0 Incoming Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>40.1</B
+> Messages are associated with mailboxes (and hence to
+	  users)</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>40.2</B
+> Messages have various flags to record their states
+	  (deleted, answered, read, draft, etc.)</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>40.3</B
+> Messages have headers associated with them which keep
+	  track of their header information</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>40.4</B
+> Messages have attachments associated with them which
+	  store any data received as an attachment</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>50.0 Outgoing Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>50.1</B
+> Messages are associated with the composing user</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>50.2</B
+> Messages have headers associated with them which keep
+	  track of their header information</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>50.3</B
+> Messages have attachments associated with them which
+	  store any data received as an attachment</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements--requirements-webmail-administration"
+>2.1.8. Requirements: Webmail Administration</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>60. 0 Creating Domains</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>60.1</B
+> The administrator may create or delete domains for
+	  which Webmail will accept mail
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>70.0 Creating Webmail Accounts</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>70.1</B
+> The administrator may create or delete user Webmail
+	  accounts</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>70.2</B
+> The administrator may set the size limit(in mb) of
+	  Webmail accounts
+	</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements--requirements-webmail-user-interface"
+>2.1.9. Requirements: Webmail User Interface</A
+></H2
+><UL
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>80.0 Browsing Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>80.1</B
+> The user may browse any of his or her existing
+	  mailboxes</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>80.2</B
+> Messages are listed by address, subject, size, whether
+	  it has been read, and time</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>80.3</B
+> The user may sort the messages by any of the above
+	  columns
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>90.0 Reading Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>90.1</B
+> The user can view the body and certain headers of the
+	  message</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>90.2</B
+> The user can move, delete, forward, or reply to the
+	  message</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>90.3</B
+> The user may skip to the next, next unread, previous,
+	  and previous unread messages, or to the browsing view (index)
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.0 Composing Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.1</B
+> The user may enter the following fields: recipient,
+	  cc, bcc, subject, body</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.2</B
+> Only the recipient is required</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.3</B
+> The user may upload and attach files to the
+	  message</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.4</B
+> The user may attach a signature</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.5</B
+> The user may select whether to allow html tags in the
+	  message</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>100.6</B
+> The user may view an html preview of their
+	  message
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.0 Filtering Messages</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.1</B
+> The user may filter messages by any message header,
+	  body, status, mailbox, and age</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.2</B
+> Filters can be applied to incoming messages and have
+	  an associated action executed upon that message</P
+><UL
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.2.1</B
+> Actions include refiling, deleting, and
+		forwarding
+	      </P
+></LI
+></UL
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.3</B
+> Filters can be used to generate views based on the
+	  filter constraints</P
+><UL
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.3.1</B
+> Views can be saved, edited, and applied
+	      </P
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>110.3.2</B
+> Views can be created on the fly as dynamic
+		searches
+	      </P
+></LI
+></UL
+></LI
+><LI
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>120.0 Security</B
+></P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>120.1</B
+> The user may only access messages in his or her own
+	  mailboxes -- this includes reading, browsing, responding to, and
+	  forwarding</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>120.2</B
+> The user may only modify or delete folders that he or
+	  she created</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>120.3</B
+> The user may only modify or delete filters that he or
+	  she created</P
+><P
+CLASS="listitem"
+><B
+CLASS="phrase"
+>120.4</B
+> The user's mail is not visible to any other user,
+	  including all admins
+	</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="requirements-revision-history"
+>2.1.10. Revision History</A
+></H2
+><DIV
+CLASS="informaltable"
+><A
+NAME="AEN490"
+></A
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+CELLPADDING="10"
+><THEAD
+><TR
+><TH
+ALIGN="CENTER"
+VALIGN="MIDDLE"
+>Document Revision #</TH
+><TH
+ALIGN="CENTER"
+VALIGN="MIDDLE"
+>Action Taken, Notes</TH
+><TH
+ALIGN="CENTER"
+VALIGN="MIDDLE"
+>When?</TH
+><TH
+ALIGN="CENTER"
+VALIGN="MIDDLE"
+>By Whom?</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>0.1</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Creation</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>09/04/2000</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Erik Bielefeldt</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>0.2</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Fixed a few errors and added new features</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>11/10/2000</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Erik Bielefeldt</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+><A
+HREF="mailto:erik@arsdigita.com"
+TARGET="_top"
+>erik@arsdigita.com</A
+></P
+><P
+>&#13;      Last modified: $Date$
+    </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="acs-admin-guide.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="design.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ACS Administrator's guide</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Webmail Design Document</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,556 @@
+// MessageParser.sqlj
+// part of the webmail ACS module
+// written by Jin Choi <jsc@arsdigita.com>
+// 2000-03-01
+
+// This class provides some static methods for parsing RFC822 messages
+// into an Oracle database.
+
+package com.arsdigita.mail;
+
+import oracle.sql.*;
+import oracle.sqlj.runtime.Oracle;
+import java.sql.*;
+
+import java.io.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.util.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import javax.activation.*;
+
+public class MessageParser {
+    
+    private static boolean runningOutsideOracleP = false;
+    protected static Session s = null;
+
+
+    public static void main (String args[]) {
+    // For debugging.
+	try {
+	    // set the default connection to the URL, user, and password
+	    // specified in your connect.properties file
+	    Oracle.connect(MessageParser.class, "connect.properties");
+	    System.out.println("Connected.");
+
+	    // Set the flag to tell the system not to delete any messages
+	    // after parsing.
+	    MessageParser.runningOutsideOracleP = true;
+	    
+	    MessageParser.processQueue("/home/nsadmin/servers/erik/qmail/queue/new");
+#sql { COMMIT };
+	    System.out.println("Parse succeeded.");
+	} catch (Exception e) { 
+	    System.err.println("Error running the example: " + e.getMessage());
+	    e.printStackTrace();
+	}
+	System.exit(1);
+    }
+    
+
+
+    public static void processQueue(String queueDirectory) 
+    // Process all files in a directory.
+	throws SQLException {
+	
+	// Go through all the files in the queue and attempt to parse them.
+	File qdir = new File(queueDirectory);
+	
+	// Not compatible with 1.1
+	// File[] filesToProcess = qdir.listFiles();
+
+	String[] filenamesToProcess = qdir.list();
+	for (int i = 0; i < filenamesToProcess.length; i++) {
+	    File currentFile = new File(qdir, filenamesToProcess[i]);
+	    if (! currentFile.isFile()) {
+		System.out.println("Not a file!");
+		continue;
+	    }
+	    try {
+		parseMessageFromFile(currentFile);
+		if (! MessageParser.runningOutsideOracleP) {
+#sql { COMMIT };
+		    currentFile.delete();
+		}
+	    } catch (Exception e) {
+		// We don't want to quit for parse errors.
+#sql { ROLLBACK };
+		recordParseError(currentFile, e);
+	    }
+	}
+    }
+
+
+    public static void parseMessageFromFile(String filename) 
+    // Process a single file.
+	throws MessagingException, SQLException, FileNotFoundException, IOException, ParseException {
+	File f = new File(filename);
+	parseMessageFromFile(f);
+    }
+
+    protected static void recordParseError(File currentFile, Exception e)
+	throws SQLException {
+	int n_already_reported = 0;
+	String filename = currentFile.getAbsolutePath();
+
+#sql {select count(*) into :n_already_reported 
+	    from wm_parse_errors
+		where filename = :filename};
+
+	if (n_already_reported == 0) {
+	    String errmsg = stackTrace(e);
+	    
+#sql {insert into wm_parse_errors (filename, error_message, first_parse_attempt)
+		values (:filename, :errmsg, sysdate)};
+	}
+    }
+
+
+    public static void parseMessageFromFile(File file) 
+	throws MessagingException, SQLException, FileNotFoundException, IOException, ParseException {
+	// Open the file.
+	BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
+
+	// Get the headers as an enumeration of Header objects.
+	InternetHeaders ih = new InternetHeaders(is);
+	Enumeration headers = ih.getAllHeaders();
+	int msgId = 0;
+
+	// Get the user_id for this message.  '-' = ascii #45
+	// We cut off the "prefix" for comparison
+	String lastDeliveredTo = ih.getHeader("Delivered-To", null);
+	lastDeliveredTo = lastDeliveredTo.toLowerCase();
+	int strIndex =  lastDeliveredTo.indexOf(45);
+	String deliveryName = lastDeliveredTo.substring(strIndex + 1);
+	int userId = -1, mailboxId = 0;
+
+	try {
+#sql { select mailbox_id into :mailboxId
+   	   from wm_mailboxes m where m.name = 'INBOX'
+           and m.user_id = 
+	     (select user_id from wm_email_user_map 
+             where delivery_address = :deliveryName) };     
+	} catch (Exception e) {
+	    // If this fails, we'll put message in SYSTEM mailbox
+	    int strIndex2 =  deliveryName.indexOf(45);
+	    String domainName = deliveryName.substring(0, strIndex2);
+
+	    // We won't catch this, because if it fails, the message
+	    // is undeliverable anyways...
+#sql { select mailbox_id into :mailboxId
+         from wm_mailboxes mb, wm_email_user_map eum, wm_domains d
+         where d.short_name = :domainName and eum.domain = :domainName
+           and eum.email_user_name = d.admin_user_name
+           and mb.user_id = eum.user_id and mb.name = 'SYSTEM' };
+	}
+
+#sql {select wm_global_sequence.nextval into :msgId from dual};
+
+#sql {insert into wm_messages (msg_id, mailbox_id, body, msg_size) 
+	    values (:msgId, :mailboxId, empty_clob(), 1)};
+
+	// Create new record in wm_messages and grab the CLOB to stuff with the body.
+	CLOB body = null;
+
+#sql {select body into :body from wm_messages where msg_id = :msgId};
+	
+	copyInputStreamToClob(is, body);
+
+#sql {update wm_messages set msg_size=greatest(ceil(dbms_lob.getlength(body)/1024), 1) where msg_id = :msgId };
+
+	// Insert the headers into wm_headers.
+	insertHeaders(msgId, headers);
+
+	String contentType = ih.getHeader("Content-Type", null);
+	if (contentType != null) {
+	    contentType = contentType.toLowerCase();
+	    if (contentType.indexOf("text") == -1) {
+		// Reopen the file to pass to parseMIME.
+		is = new BufferedInputStream(new FileInputStream(file));
+		
+		// If message is a MIME message and is not plain text, save
+		// text to wm_messages.mime_text and save attachments to directory.
+		parseMIME(msgId, is);
+	    }
+	}
+    }
+
+    private static void insertHeaders(int msgId, Enumeration headers)
+	throws SQLException, ParseException {
+	int sortOrder = 0;
+	boolean receivedSeenP = false;
+	String from_value = "";
+	String to_value = "";
+	String subject_value = "";
+	String message_id = "";
+	Timestamp dateStamp = null;
+
+	while (headers.hasMoreElements()) {
+	    Header h = (Header) headers.nextElement();
+	    String name = h.getName(); 
+	    String lowerName = name.toLowerCase();
+	    String value = h.getValue();
+	    String shortValue = value;
+	    if (value.length() > 150) {
+		shortValue = value.substring(0, 150);
+	    }
+	    if (value.length() > 0) {
+	      if (lowerName.equals("from")) 
+		  from_value = shortValue;
+	      else if (lowerName.equals("to")) 
+		  to_value = shortValue;
+	      else if (lowerName.equals("subject")) 
+		  subject_value = shortValue;
+	      else if (lowerName.equals("date")) {
+		try {
+		  dateStamp = parseDate(value);
+		} catch (Exception pe) {
+		  // we'll just use Oracle's sysdate
+		}
+	      } else {
+		if (lowerName.equals("message-id")) message_id = value;
+		// Random headers (most likely the "To" field) may be >4000 bytes
+		// Truncate if so.
+	      }
+	      String insertValue = value;
+	      if (value.length() > 4000) {
+		  insertValue = value.substring(0, 4000);
+	      }
+#sql { INSERT INTO wm_headers (msg_id, name, value, sort_order)
+       VALUES (:msgId, :name, :insertValue, :sortOrder) };
+	      sortOrder++;
+	    }
+	}
+	if (dateStamp == null) 
+#sql { UPDATE wm_messages SET from_value=:from_value, to_value=:to_value,
+	      date_value=sysdate, subject_value=:subject_value,
+	      message_id=:message_id WHERE msg_id=:msgId };
+	else 
+#sql { UPDATE wm_messages SET from_value=:from_value, to_value=:to_value,
+	      date_value=:dateStamp, subject_value=:subject_value,
+	      message_id=:message_id WHERE msg_id=:msgId };
+    }
+
+
+    // Utility procedure to write an InputStream to a CLOB.
+    protected static void copyInputStreamToClob(InputStream is, CLOB to) 
+	throws IOException, SQLException {
+	OutputStream os = to.getAsciiOutputStream();
+	int chunk = to.getChunkSize();
+	byte[] copyBuffer = new byte[chunk];
+
+	int bytesRead;
+
+	while ((bytesRead = is.read(copyBuffer)) > 0) {
+	    os.write(copyBuffer, 0, bytesRead);
+	}
+	os.flush();
+	os.close();
+	is.close();
+    }
+
+    // Same, for BLOBs.
+    public static void copyInputStreamToBlob(InputStream is, BLOB to) 
+	throws IOException, SQLException {
+	OutputStream os = to.getBinaryOutputStream();
+	int chunk = to.getChunkSize();
+	byte[] copyBuffer = new byte[chunk];
+
+	int bytesRead;
+
+	while ((bytesRead = is.read(copyBuffer)) > 0) {
+	    os.write(copyBuffer, 0, bytesRead);
+	}
+	os.flush();
+	os.close();
+	is.close();
+    }
+
+
+    // Utility procedure for parsing timestamps. Java date parsing
+    // wayyyy sucks; this is the simplest method that seems to work
+    // most of the time.
+    public static Timestamp parseDate(String s)
+	throws ParseException {
+	// This DateFormat stuff doesn't work so great.
+	// DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+	//					       DateFormat.FULL);
+	System.out.println("Attempting to parse date: " + s);
+	return new java.sql.Timestamp(Timestamp.parse(s));
+    }
+
+
+    // Parses a MIME message, inserts text into wm_messages.mime_text, and unpacks
+    // attachments into wm_attachments.
+    public static void parseMIME(int msgId, InputStream is) 
+	throws MessagingException, SQLException, IOException {
+
+	// Parse the message.
+	if (s == null) {
+	    Properties props = new Properties();
+	    s = Session.getDefaultInstance(props, null);
+	}
+	MimeMessage msg = new MimeMessage(s, is);
+	is.close();
+
+	// Buffer we're going to store up text bits in.
+	StringBuffer text = new StringBuffer();
+
+	// Wrap partNumber in an array so we can pass by reference.
+	int[] partNumber = new int[1];
+	partNumber[0] = 0;
+
+	try {
+	    dumpPart(msgId, msg, text, partNumber);
+	} catch (Exception e) {
+	    // If dumpPart fails, then just treat the message as text.
+	    System.out.println("Dump part exception");
+	    return;
+	}
+	    
+	String textStr = text.toString();
+	
+	if (textStr.length() > 0) {
+	    CLOB mimeText = null;
+	    StringBufferInputStream sbis = new StringBufferInputStream(textStr);
+#sql { update wm_messages set mime_text = empty_clob() where msg_id = :msgId };
+#sql { select mime_text into :mimeText from wm_messages where msg_id = :msgId };
+	    copyInputStreamToClob(sbis, mimeText);
+	}
+    }
+
+    // Writes text representation of part to text buffer and saves
+    // attachment data to wm_attachments. partNumber is for creating
+    // unique identifiers if filename is not specified in the part.
+
+    protected static void dumpPart(int msgId, Part p, StringBuffer text, int[] partNumber)
+	throws MessagingException, SQLException, IOException {
+
+	Object o = p.getContent();
+
+	// if html, don't wrap in <pre>, otherwise do
+
+	if (p.isMimeType("text/html")) {
+	    text.append(o);
+	    return;
+	}
+
+	if (o instanceof java.lang.String) {
+	    text.append("<pre>");
+	    text.append(encodeForDisplay((String)o));
+	    text.append("</pre>");
+	    return;
+	}
+
+	if (o instanceof javax.mail.Multipart) {
+	    Multipart mp = (Multipart) o;
+	    int count = mp.getCount();
+
+	    // We will only include the html text if there is 
+	    // both html and plain text.
+	    boolean htmlPart = false;	
+	    boolean drawLine = false;
+	    for (int i = 0; i < count; i++) {
+		if (mp.getBodyPart(i).isMimeType("text/html"))
+		    htmlPart=true;
+	    }
+	    for (int i = 0; i < count; i++) {
+		Part subPart = mp.getBodyPart(i);
+		if (!htmlPart || !subPart.isMimeType("text/plain")) {
+		    if (drawLine) text.append("\n<hr>");
+		    dumpPart(msgId, mp.getBodyPart(i), text, partNumber);
+		    drawLine=true;
+		}
+	    }
+	    return;
+	}
+	
+	if (o instanceof javax.mail.internet.MimeMessage) {
+	    MimeMessage msg = (MimeMessage) o;
+	    String[] v = {"Subject", "Date", "From", "To"};
+
+	    for (int i=0; i<4; i++) {
+		String hValue = msg.getHeader(v[i], " ,");
+		if ( hValue != null ) 
+		    text.append("<b>" + v[i] + ": </b>" + encodeForDisplay(hValue) 
+			    + "<br>\n");
+	    }
+	    text.append("<br>");
+	    dumpPart(msgId, msg, text, partNumber);
+	    return;
+	}
+
+	if (o instanceof java.io.InputStream) {
+	    InputStream is = (InputStream) o;
+	    
+	    String filename = null;
+	    try {
+		filename = p.getFileName();
+	    } catch (MessagingException mex) {
+		System.out.println(mex.getMessage());
+	    }
+	    
+	    if (filename == null || filename.length() == 0) {
+		filename = "Attachment_" + partNumber[0]++;
+            }
+	    int attId = 0;
+#sql { select wm_global_sequence.nextval into :attId from dual };
+
+	    // Write out place holders for links.
+	    if (p.isMimeType("image/*")) {
+		text.append("##wm_image: " + attId + " " + filename + "\n");
+	    } else {
+		text.append("##wm_part: " + attId + " " + filename + "\n");
+	    }
+	    
+	    String contentType = p.getContentType();
+	    // use only primary type and sub type
+	    int firstSemicolonLocation = contentType.indexOf(";");
+	    if (firstSemicolonLocation != -1) {
+		contentType = contentType.substring(0, firstSemicolonLocation);
+	    }
+	    
+	    try {
+		BLOB data = null;
+#sql { insert into wm_attachments (att_id,msg_id, filename, content_type, data) 
+         values
+         (:attId, :msgId, :filename, :contentType, empty_blob()) };
+#sql { select data into :data from wm_attachments where att_id = :attId };
+		copyInputStreamToBlob(is, data);
+	    } catch (SQLException e) {
+		System.out.println("Insert attachments error: " +e.getMessage());
+		throw(e);
+	    }
+	}
+    }
+
+    // Utility method to return stack trace from an Exception.
+    public static String stackTrace(Exception e) {
+	CharArrayWriter caw = new CharArrayWriter();
+	PrintWriter pw = new PrintWriter(caw);
+	e.printStackTrace(pw);
+	pw.flush();
+	return caw.toString();
+    }
+
+    public static String encodeForDisplay(String s) {
+	String returnS = "";
+	for (int i=0; i < s.length(); i++) {
+	    if (s.charAt(i)=='<')
+		returnS=returnS + "&lt;";
+	    else if (s.charAt(i) == '&')
+		returnS=returnS + "&#038;";
+	    else 
+		returnS=returnS + s.charAt(i);
+	}
+	return returnS;
+    }
+
+
+    public static void reparseMessageFromDB (int msgId) 
+	throws MessagingException, SQLException, IOException {	
+	/* This is a utility function for reparsing messages
+	 * which were already in the database.
+	 * It's main use is to update old messages when there is a 
+	 * change to the parser. 
+	 */
+
+	String contentType;
+	try {
+#sql { SELECT lower(value) INTO :contentType FROM wm_headers 
+ WHERE msg_id = :msgId AND lower(name) = 'content-type' AND rownum = 1 };
+	} catch (Exception e) {
+	    contentType = "";
+	}
+	if (!contentType.equals("") && (contentType.indexOf("text") == -1)) {
+	    DataSource dbMsg = MessageComposer.getMsgDataSource(msgId);
+#sql { DELETE FROM wm_attachments WHERE msg_id = :msgId };
+	    parseMIME(msgId, dbMsg.getInputStream());
+	} else {
+#sql { UPDATE wm_messages SET mime_text='' WHERE msg_id = :msgId };
+	}
+    }
+
+
+    public static String getMsgResponseText(int msgId) 
+	throws MessagingException, SQLException, IOException {	
+	/* This gets an appropriate string for a message response 
+	 * from the given message.
+	 */
+
+	CLOB body;
+	String content_type;
+	try {
+#sql { SELECT body INTO :body FROM wm_messages WHERE msg_id=:msgId };
+	} catch (Exception e) {
+	    // This shouldn't happen but just in case...
+	    return "";
+	}
+	if (body == null) 
+	    return "";
+	try {
+#sql { SELECT value INTO :content_type FROM wm_headers 
+         WHERE msg_id=:msgId AND lower(name)='content-type' };
+	} catch (Exception e) {
+	    return body.getSubString(1, (int) body.length());
+	}
+	if (s == null) {
+	    Properties props = new Properties();
+	    s = Session.getDefaultInstance(props, null);
+	}
+	MimeMessage msg = new MimeMessage(s);
+	msg.setDataHandler( new DataHandler (new ClobDataSource(body, content_type, null)) );
+	msg.addHeader("Content-Type", content_type);
+	// wrap in array so we can pass by reference
+	boolean[]  grabHtml = new boolean[1];
+	grabHtml[0] = true;
+	return getPartResponse((Part)msg, grabHtml);
+    }
+
+
+    public static String getPartResponse(Part p, boolean[] grabHtml)
+	throws MessagingException, IOException {
+	/* p is the part we are going to be returning an appropriate 
+	 * response string for.  If grabHtml is true, we'll grab 
+	 * html content too (we have this flag so that if we grab some
+	 * text/plain for a part, we won't grab the html for that same 
+	 * part (as they are usually duplicates).
+	 */
+	StringBuffer returnString = new StringBuffer();
+	Object content =  p.getContent();
+	String content_type = p.getContentType().toLowerCase();
+	if ( content_type.indexOf("text/plain") != -1 ) {
+	    // for text, we just return the content
+	    returnString.append(content);
+	    returnString.append("\n\n");
+	    grabHtml[0] = false;
+	} else if ( content_type.indexOf("text/html") != -1 
+		    && grabHtml[0] == true ) {
+	    returnString.append(content);
+	    returnString.append("\n\n");    
+	} else if ( (content instanceof MimeMessage) ) {
+	    // Add headers for message
+	    MimeMessage mmsg = (MimeMessage) content;
+	    String[] v = {"Subject", "Date", "From", "To"};
+	    for (int j=0; j<4; j++) {
+		returnString.append(v[j]+ ": " + mmsg.getHeader(v[j], " ,") + "\n");
+	    }
+	    boolean[]  grabHtmlInner = new boolean[1];
+	    grabHtmlInner[0] = true;
+	    returnString.append("\n" + getPartResponse((Part)mmsg, grabHtmlInner) 
+				+ "\n\n");
+	} else if ( content instanceof javax.mail.Multipart ) {
+	    Multipart mp = (Multipart) content;
+	    for ( int i=0; i < mp.getCount(); i++) {
+		returnString.append( getPartResponse(mp.getBodyPart(i), grabHtml) );
+	    }
+	} else {
+	    String filename = p.getFileName();
+	    if ( filename != null )
+		returnString.append("Attachment: " + p.getFileName() + "\n\n");
+	}
+	return returnString.toString();
+    }
+
+}

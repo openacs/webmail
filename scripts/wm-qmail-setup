@@ -1,0 +1,186 @@
+#!/usr/local/bin/tclsh
+proc check_confirm { confirm } {
+  if { $confirm != "Y" && $confirm != "N" && $confirm != "y" && $confirm !="n" && $confirm != "" } {
+    return 0
+  } else {
+    return 1
+  }
+}
+
+puts "This script must be run as root.  Additionally, it was written
+on a Sun workstation, and may need customization to run 
+on your particular flavor of UNIX.  Make sure to verify 
+that you wish to allow the modifications that this script 
+will make to your qmail configuration.  Also, be sure to 
+verify that all changes were succesful afterwards.
+(return to continue)\n"
+gets stdin junk
+
+puts "Checking for qmail..."
+set ps_out [exec ps -ef | grep qmail]
+if { ![regexp {qmail-send} $ps_out] } {
+  puts "Error: It looks like you don't have qmail running."
+  exit
+}
+
+set domain ""
+while { $domain == "" } {
+    puts "\nPlease specify the domain you wish to receive mail for: "
+    gets stdin domain
+}
+
+set short_name ""
+while { $short_name == "" } {
+    puts "\nPlease enter a \"short_name\" for by which you wish this domain 
+to be identified by (for example, if your domain is 
+webmail.arsdigita.com, you might choose \"webmail\"): "
+    gets stdin short_name
+}
+
+set server_name ""
+while { $server_name == "" } {
+  puts "\nPlease specify your server name (i.e. if your .ini file is
+webmail.ini, your server name would be webmail): "
+  gets stdin server_name
+}
+
+
+puts "\nPlease specify the path to your Aolserver home directory
+(default \"/home/aol32\"): "
+gets stdin aolhome
+if { $aolhome == "" } {
+  set aolhome "/home/aol32"
+}
+
+############# SETUP QMAIL ####################
+puts "\nModifying qmail alias files... you will be prompted to
+confirm each modification before it is made.\n"
+
+############# RCPTHOSTS ##################
+set filename "/var/qmail/control/rcpthosts"
+set confirm "z"
+while { ![check_confirm $confirm] } {
+  puts "Insert \"$domain\" into $filename
+(\"y\" or \"n\", default \"y\")?"
+  gets stdin confirm
+}
+
+if { [string tolower $confirm] == "n" } {
+  puts "\nExiting."
+  exit
+}
+
+set rcpthosts [exec cat $filename]
+if { [regexp "\n$domain *\n" $rcpthosts] 
+|| [regexp "\^$domain *\n" $rcpthosts] 
+|| [regexp "\n$domain *\$" $rcpthosts] 
+|| [regexp "\^$domain *\$" $rcpthosts] } {
+  puts "NOTICE: Domain already registered with rcpthosts.
+Skipping..."
+} else {
+  exec echo $domain >> $filename
+}
+
+############# VIRTUALDOMAINS #################
+set filename "/var/qmail/control/virtualdomains"
+
+set confirm "z"
+while { ![check_confirm $confirm] } {
+  puts "\nInsert \"$domain:webmail-$short_name\" into $filename
+(\"y\" or \"n\", default \"y\")?"
+  gets stdin confirm
+}
+
+if { [string tolower $confirm] == "n" } {
+  puts "\nExiting."
+  exit
+}
+
+if { [file exists $filename] } {
+  set virtuald [exec cat $filename] 
+} else {
+  set virtuald ""
+}
+if { [regexp "$domain:" $virtuald] } {
+  puts "NOTICE: Domain already registered with virtualdomains.
+Skipping..."
+} else {
+  exec echo "$domain:webmail-$short_name" >> $filename
+}
+
+################# USERS/ASSIGN #################
+set filename "/var/qmail/users/assign"
+if { [catch { set passwd_file [exec grep oracle "/etc/passwd"] }] } {
+  puts "We couldn't find an oracle user in your /etc/passwd file."
+  exit
+}
+if { ![regexp {oracle:[^:]*:([0-9]+):([0-9]+):} $passwd_file match uid gid] } {
+  puts "\nWe couldn't figure out the oracle users's uid and gid...
+Please enter the oracle uid: "
+  gets stdin uid
+  puts "Please enter the oracle gid: "
+  gets stdin gid
+  if { $uid == "" || $gid == "" } {
+    puts "\nInvalid ids.  Exiting..."
+    exit
+  }
+}
+
+set assign_string "+webmail-:oracle:$uid:$gid:$aolhome/servers/$server_name/qmail/alias:-::"
+set confirm "z"
+while { ![check_confirm $confirm] } {
+  puts "\nInsert $assign_string into $filename
+(\"y\" or \"n\", default \"y\")?"
+  gets stdin confirm
+}
+
+if { [string tolower $confirm] == "n" } {
+  puts "\nExiting."
+  exit
+}
+
+set assign_string2 "\\+webmail\\-\\:oracle\\:$uid\\:$gid\\:$aolhome/servers/$server_name/qmail/alias"
+
+if { [file exists $filename] } {
+  set assign [exec cat $filename]
+} else {
+  set assign ""
+}
+
+if { [regexp $assign_string2 $assign] } {
+  puts "NOTICE: Domain already registered with users/assign.
+Skipping..."
+} else {
+  set fptr [open $filename w]
+  puts $fptr $assign_string
+  while { [regexp "(\[^\n\]*)\n(.*)" $assign match line assign] } {
+    if { $line != "." && $line != "" } {
+      puts $fptr $line
+    }
+  }
+
+  puts $fptr "."
+  close $fptr
+}
+
+puts "\nCreating directory $aolhome/servers/$server_name/qmail/alias..."
+exec mkdir -p "$aolhome/servers/$server_name/qmail/alias"
+exec chown -R nsadmin:web "$aolhome/servers/$server_name/qmail"
+
+puts "\nCreating maildir $aolhome/servers/$server_name/qmail/queue..."
+exec "/var/qmail/bin/maildirmake" "$aolhome/servers/$server_name/qmail/queue"
+exec chown -R oracle "$aolhome/servers/$server_name/qmail/queue"
+
+puts "\nRestarting qmail..."
+exec "/var/qmail/bin/qmail-newu"
+set ps_out [exec ps -ef | grep qmail]
+regexp {qmails[^0-9]+([0-9]+)} $ps_out match qmail_pid
+puts "Killing qmail-send, pid: $qmail_pid"
+exec kill -HUP 194
+
+puts "\nCongratulations, qmail configuration completed!"
+
+
+
+
+

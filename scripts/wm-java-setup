@@ -1,0 +1,96 @@
+#!/usr/local/bin/tclsh
+puts "This script will install the java packages necessary for 
+webmail into Oracle.  It expects to find the zipped tarballs 
+for the Java Activation Framework and JavaMail in your /tmp 
+directory.  Make sure you are running this script from your 
+/tmp directory. (return to continue)"
+gets stdin junk
+
+puts "Checking for jar..."
+set which_out [exec which jar]
+if { [regexp {no jar in} $which_out] } {
+  puts "Error: It looks like you don't have the java jar utility."
+  exit
+}
+
+puts "Please enter your oracle username/passwd:"
+gets stdin user_pw
+
+puts "\nExtracting JavaBeans and JavaMail...\n"
+set ls_out [exec ls -1 /tmp]
+if { ![regexp {(jaf[^\.]*.zip)} $ls_out match jaf_name]
+|| ![regexp {(javamail[^\.]*.zip)} $ls_out match javamail_name] } {
+  puts "Couldn't find the required files."
+  puts "This program expects the zip files to be in the /tmp directory"
+  puts "and named jaf1_0_1.zip and javamail1_1_3.zip (or suitable version"
+  puts "number)."
+  exit
+}
+if { 0} {
+puts "Loading $jaf_name... "
+
+exec unzip /tmp/$jaf_name
+puts "unzipped... "
+set ls_out [exec ls -l /tmp | grep -v zip]
+if { ![regexp "(jaf\[^\n\]*)\n" $ls_out match jaf_dir] } {
+  puts "Couldn't find the unzipped jaf directory."
+  exit
+}
+set jaf_dir "/tmp/$jaf_dir"
+exec jar xf "$jaf_dir/activation.jar"
+puts "extracted... "
+exec jar cf0M "activation.jar" "META-INF" "javax" "com"
+exec rm -rf $jaf_dir
+exec rm -rf META-INF
+exec rm -rf javax
+exec rm -rf com
+puts "created... "
+exec loadjava -u $user_pw -r "activation.jar" >& jaf-errors.log
+puts "loaded... "
+
+puts "\nLoading $javamail_name... "
+
+exec unzip /tmp/$javamail_name
+puts "unzipped... "
+set ls_out [exec ls -l /tmp | grep -v zip]
+if { ![regexp "(javamail\[^\n\]*)\n" $ls_out match javamail_dir] } {
+  puts "Couldn't find the unzipped javamail directory."
+  exit
+}
+set javamail_dir "/tmp/$javamail_dir"
+catch { exec jar xf "$javamail_dir/mail.jar" }
+exec jar xf "$javamail_dir/mail.jar"
+puts "extracted... "
+exec jar cf0M "mail.jar" "META-INF" "javax" "com"
+exec rm -rf $javamail_dir
+exec rm -rf META-INF
+exec rm -rf javax
+exec rm -rf com
+puts "created... "
+exec loadjava -u $user_pw -r "mail.jar" >& javamail-errors.log
+puts "loaded... \n"
+
+}
+puts "Please enter your server directory name"
+puts "(eg. /web/servername/):"
+gets stdin server_dir
+if { ![regexp {/$} $server_dir] } {
+  set server_dir "$server_dir/"
+}
+
+set java_dir "$server_dir/packages/webmail/java"
+
+catch { exec loadjava -u $user_pw -r "$java_dir/StringBufDataSource.java" "$java_dir/BlobDataSource.java" "$java_dir/ClobDataSource.java" "$java_dir/MessageParser.sqlj" "$java_dir/MessageComposer.sqlj" >& webmail-errors.log }
+
+set webmail_errors [exec cat "webmail-errors.log"]
+if { [regexp {FileNotFoundException} $webmail_errors] 
+|| [regexp {source requires} $webmail_errors] } {
+  puts $webmail_errors
+  puts "\nError: There was a problem loading in the Webmail Java files.
+Please consult the installation guide for troubleshooting details."
+} else {
+  puts "Congratulations!  You have succesfully loaded the necessary
+Java files.  Please review jaf-errors.log, javamail-errors.log,
+and webmail-errors.log to make sure there were no un-detected errors upon 
+install."
+}

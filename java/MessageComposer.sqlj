@@ -1,0 +1,240 @@
+/* /webmail/java/MessageComposer.sqlj
+ * @author Jin Choi <jsc@arsdigita.com>
+ * @creation-date 2000-03-01
+ * @cvs-id: $Id$
+ *
+ * This class implements static methods for composing MIME messages.
+ */
+
+package com.arsdigita.mail;
+
+import oracle.sql.*;
+import oracle.sqlj.runtime.Oracle;
+import java.sql.*;
+
+import java.io.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.util.*;
+import javax.activation.*;
+
+#sql iterator AttachmentsIter ( BLOB data, String content_type, String filename );
+#sql iterator HeadersIter ( String name, String value );
+
+
+public class MessageComposer {
+    
+    private static boolean runningOutsideOracleP = false;
+    protected static Session s = null;
+
+    // The main proc is for debugging outside of Oracle, and 
+    // won't be used by Webmail.
+    public static void main (String args[]) {
+	try {
+	    // set the default connection to the URL, user, and password
+	    // specified in your connect.properties file
+	    Oracle.connect(MessageComposer.class, "connect.properties");
+	    System.out.println("Connected to the db.");
+
+	    composeMimeMessage(1,0);
+	    
+	} catch (Exception e) { 
+	    System.err.println("Error running the example: " + e.getMessage());
+	    e.printStackTrace();
+	}
+	System.exit(1);
+    }
+
+
+    public static void composeMimeMessage(int msgId, int forwardMsgId)
+	throws MessagingException, IOException, SQLException {
+	Vector parts = new Vector(); // vector of data handlers
+
+	String contentType;
+	CLOB bodyText = null;
+	CLOB composedMessage = null;
+	
+	try {	
+#sql { select value into :contentType from wm_outgoing_headers where outgoing_msg_id = :msgId and name = 'Content-Type' };
+	} catch (Exception e) {
+	    contentType = "text/plain";
+	}
+
+#sql { select body into :bodyText from wm_outgoing_messages where outgoing_msg_id = :msgId };
+	
+	ClobDataSource cds = new ClobDataSource(bodyText, contentType, null);
+	parts.addElement(new DataHandler(cds));
+	
+	AttachmentsIter attIter;
+#sql attIter = { select data, content_type, filename from wm_outgoing_message_parts where outgoing_msg_id = :msgId order by sort_order };
+	while (attIter.next()) {
+	    BlobDataSource bds = new BlobDataSource(attIter.data(), attIter.content_type(), attIter.filename());
+	    parts.addElement(new DataHandler(bds));
+	}
+	attIter.close();
+	
+	// Create new MimeMessage.
+	if (s == null) {
+	    Properties props = new Properties();
+	    s = Session.getDefaultInstance(props, null);
+	}
+	
+	MimeMessage msg = new MimeMessage(s);
+
+	// Add the headers and get the from name to hand to qmail
+	HeadersIter hIter;
+	String fromName = "";
+#sql hIter = { select name, value from wm_outgoing_headers where outgoing_msg_id = :msgId order by sort_order };
+	while (hIter.next()) {
+	    if (hIter.name().toLowerCase().equals("from")) 
+		fromName = hIter.value();
+	    msg.addHeader(hIter.name(), hIter.value());
+	}
+	hIter.close();
+	
+        // We cut off the name from fromName and just grab the address
+	// I.e. bob@bob.com from "bob hope <bob.bob.com>"
+	// 60 = '<' in decimal ascii; 62 = '>'
+	// We'll give this to qmail as the from address
+        int strIndex1 =  fromName.indexOf(60);
+	int strIndex2 = fromName.indexOf(62);
+	if ( strIndex1 >= 0 && strIndex2 >= 0 )
+	    fromName = fromName.substring(strIndex1 + 1, strIndex2);
+
+	// Add the attachments.
+	addParts(msg, parts, forwardMsgId);
+
+	// Synchronize the headers to reflect the contents.
+	msg.saveChanges();
+
+	// Some mail clients don't like having '\r' in their messages,
+	// so we're going to buffer the message and feed it character
+	// by character to qmail, removing all '\r's
+	ByteArrayOutputStream bufferOutput = new ByteArrayOutputStream();
+	msg.writeTo(bufferOutput);
+	byte[] bufferBytes = bufferOutput.toByteArray();
+	bufferOutput.close();
+
+	// Open a qmail process and an OutputStream to it.
+	Process qmailProcess = Runtime.getRuntime().exec("/var/qmail/bin/qmail-inject -h -f " + fromName);
+	OutputStream qmailOutput = qmailProcess.getOutputStream();
+
+	int length = bufferBytes.length;
+	for (int j=0; j < length; j++) {
+	    int a = bufferBytes[j];
+	    if ( a != '\r' )
+		qmailOutput.write(a);
+        }
+	qmailOutput.close();
+    }
+
+
+    protected static void addParts(MimeMessage msg, Vector parts, int forwardMsgId)
+	throws MessagingException, IOException, SQLException {
+
+	if ( (parts.size() > 1) || (forwardMsgId > 0) ) {
+	    MimeMultipart msgMultiPart = new MimeMultipart();
+	    Enumeration e = parts.elements();
+	    	    
+	    while (e.hasMoreElements()) {
+		DataHandler dh = (DataHandler) e.nextElement();		
+		String filename = dh.getName();
+		MimeBodyPart bp = new MimeBodyPart();
+		bp.setDataHandler(dh);
+		if ( filename != null ) {
+		    bp.setFileName(dh.getName());
+		}
+		if (dh.getContentType().equals("image/jpg") ||
+		    dh.getContentType().equals("image/jpeg") ||
+		    dh.getContentType().equals("image/gif") ||
+		    dh.getContentType().equals("message/rfc822"))
+		    bp.setDisposition("inline");
+		msgMultiPart.addBodyPart(bp);
+	    }
+	    if ( forwardMsgId > 0 ) 
+		msgMultiPart.addBodyPart(getForwardedMsg(forwardMsgId));
+	    msg.setContent(msgMultiPart);
+	} else {
+	    // There is only one element.
+	    DataHandler dh = (DataHandler) parts.elementAt(0);
+	    String filename = dh.getName();
+	    if ( filename != null ) {
+		msg.setFileName(dh.getName());
+	    }
+	    if (dh.getContentType().equals("image/jpg") ||
+		dh.getContentType().equals("image/jpeg") ||
+		dh.getContentType().equals("image/gif") ||
+		dh.getContentType().equals("message/rfc822"))
+		msg.setDisposition("inline");
+	    msg.setDataHandler(dh);
+	}
+    }
+
+
+    protected static MimeBodyPart getForwardedMsg(int forwardMsgId) 
+	throws MessagingException, IOException, SQLException {
+	/* This proc returns a MimeBodyPart containing the
+	 * forwarded message specified by forwardMsgId
+	 * including all it's headers and attachments.
+	 * Remember that we do this to avoid doing it in the tcl
+	 * where large attachments will be echoed to the log
+	 * if they are used as bind variables.
+	 */
+
+	/* I had a very hard time trying to assemble a MimeBodyPart
+	 * containing a MimeMessage as its content. It seems that all
+	 * the MimeBodyPart constructors as well as the setContent() proc 
+	 * parse the content.  This results in the forwarded message's
+	 * headers being interpreted as the body part's own.
+	 * In such a case, headers in common between the two (like
+	 * Content-Type and Content-Disposition) come in conflict
+	 * and an improper message results.
+	 * The only workaround I was able to find was to create a 
+	 * DataSource (in this case I chose a StringBuffer) and 
+	 * use MimeBodyPart.setDataHandler() to set the content.
+	 */
+
+	DataHandler dh = new DataHandler( getMsgDataSource(forwardMsgId) );
+	
+	MimeBodyPart mbp = new MimeBodyPart();
+	mbp.setDisposition("inline");
+	mbp.setDataHandler(dh);
+	return mbp;
+    }
+
+
+    public static DataSource getMsgDataSource (int msgId) 
+	throws IOException, SQLException {
+
+	CLOB body = null; 
+	HeadersIter hIter;
+#sql hIter = { select name, value from wm_headers where msg_id = :msgId order by sort_order };	
+	// get the forwarded message body (remember that the body column
+	// contains the full message, including attachments)
+#sql { select body into :body from wm_messages where msg_id = :msgId };
+	/*
+	 * We create a StringBuffer containing the forwarded message.
+	 * We allocate 4096 chars for the headers; this will probably be enough, 
+	 * but java automatically grows the buffer if it runs out anyways.
+	 */
+	StringBuffer strBuf;
+	if (body != null) 
+	    strBuf = new StringBuffer((int)body.length() + 4096 );
+	else 
+	    strBuf = new StringBuffer(4096);
+
+	while (hIter.next()) {
+	    strBuf.append(hIter.name() + ": " +  hIter.value() + "\n");
+	}
+	hIter.close();
+	if (body != null) 
+	    strBuf.append("\n" + body.getSubString(1, (int)body.length()));
+	else 
+	    strBuf.append("\n");
+	return new StringBufDataSource(strBuf, "message/rfc822", null);
+    }
+
+}
+
+
+

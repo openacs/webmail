@@ -1,0 +1,1367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>ACS Administrator's guide</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="aD Hack of: Modular DocBook HTML Stylesheet Version 1.60"><LINK
+REL="HOME"
+TITLE="Webmail"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Webmail"
+HREF="index.html"><LINK
+REL="NEXT"
+TITLE="Developer's guide"
+HREF="dev-guide.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="ad-doc.css"></HEAD
+><BODY
+CLASS="chapter"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Webmail</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="dev-guide.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="chapter"
+><H1
+><A
+NAME="acs-admin-guide"
+>Chapter 1. ACS Administrator's guide</A
+></H1
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="install"
+>1.1. Installing WebMail ACS 4.0</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1.1.1. <A
+HREF="acs-admin-guide.html#install-pre-installation-tasks"
+>Pre-Installation Tasks</A
+></DT
+><DT
+>1.1.2. <A
+HREF="acs-admin-guide.html#install-acquiring-needed-items"
+>Acquiring Needed Items</A
+></DT
+><DT
+>1.1.3. <A
+HREF="acs-admin-guide.html#install-setting-up-qmail-very-important"
+>Setting up Qmail (Very Important)</A
+></DT
+><DT
+>1.1.4. <A
+HREF="acs-admin-guide.html#install-installing-the-package"
+>Installing the package</A
+></DT
+><DT
+>1.1.5. <A
+HREF="acs-admin-guide.html#install-loading-in-java-to-oracle"
+>Loading in Java to Oracle</A
+></DT
+><DT
+>1.1.6. <A
+HREF="acs-admin-guide.html#install-testing-the-system"
+>Testing the system</A
+></DT
+><DT
+>1.1.7. <A
+HREF="acs-admin-guide.html#install-appendix-a-troubleshooting"
+>Appendix A: Troubleshooting</A
+></DT
+><DT
+>1.1.8. <A
+HREF="acs-admin-guide.html#install-appendix-b-notes-for-webmail"
+>Appendix B: Notes for WebMail</A
+></DT
+><DT
+>1.1.9. <A
+HREF="acs-admin-guide.html#install-appendix-c-customizing-the-qmail-configuration"
+>Appendix C: Customizing the qmail configuration</A
+></DT
+></DL
+></DIV
+><P
+>WebMail is an ACS solution to allow users to check their mail
+    via a web browser.</P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-pre-installation-tasks"
+>1.1.1. Pre-Installation Tasks</A
+></H2
+><P
+>Here we are going to check and see which of the following items
+      we need to download.</P
+><OL
+TYPE="1"
+><LI
+><P
+CLASS="listitem"
+>You must have Oracle 8.1.6, Intermedia, and ACS 4.0.1 or higher
+	  installed to use WebMail.  It is also recommended that you install the 
+	  acs-reference and acs-lang packages in order to allow Webmail to handle 
+	  servers and clients operating in different timezones (if you do not install 
+	  this, Webmail will display all times using the timezone that Oracle is 
+	  running in).  Please make sure that these items are properly installed 
+	  before proceeding.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>We will check to see if qmail is running.</P
+><PRE
+CLASS="programlisting"
+>    
+    $ ps -ef | grep qmail
+       qmails     593     1  0 16:36 ?        00:00:00 qmail-send
+       qmaill     604   593  0 16:36 ?        00:00:00 splogger qmail
+       root       605   593  0 16:36 ?        00:00:00 qmail-lspawn ./Mailbox
+       qmailr     606   593  0 16:36 ?        00:00:00 qmail-rspawn
+       qmailq     607   593  0 16:36 ?        00:00:00 qmail-clean
+       root      1256  1241  0 18:47 pts/0    00:00:00 grep qmail
+    $
+    	</PRE
+><P
+>This output means that qmail is installed and running. If you
+	  have problems with your qmail install please consult 
+	  <A
+HREF="acs-admin-guide.html#install-appendix-a-troubleshooting"
+>Appendix A: Troubleshooting</A
+>
+	  any further help can be found at 
+	  <A
+HREF="http://www.qmail.org"
+TARGET="_top"
+>www.qmail.org</A
+>.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>We will check to see if java is installed.</P
+><PRE
+CLASS="programlisting"
+>    
+    $ which jar
+       /usr/local/java/bin/jar
+    $
+    	</PRE
+><P
+CLASS="listitem"
+>You should have output similar to this meaning that you have java
+	  installed. And that you have <I
+CLASS="emphasis"
+>jar</I
+> which is the 
+	  needed utility.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-acquiring-needed-items"
+>1.1.2. Acquiring Needed Items</A
+></H2
+><P
+>Everything you download here should be stored in the /tmp
+      directory of your machine. This is not required but the rest of the
+      document will reference the files as if they are in the temp
+      directory. To complete this install, you will need access to a user in
+      the dba group and root.</P
+><OL
+TYPE="1"
+><LI
+><P
+CLASS="listitem"
+><A
+HREF="http://www.qmail.org"
+TARGET="_top"
+>Qmail</A
+>: Qmail is the mail
+	  delivery tool we will use to send a recieve mail from your web
+	  server. This should replace sendmail.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><A
+HREF="http://java.sun.com/products/jdk/1.2/download-linux.html"
+TARGET="_top"
+>Java
+	    Development SDK</A
+>: This is used for the jar utility. Generally
+	  java is also a good idea to have installed on your system.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>To install the java portion of webmail you need to have the
+	  JavaMail library from <A
+HREF="http://java.sun.com/products/javamail/"
+TARGET="_top"
+>http://java.sun.com/products/javamail/</A
+>
+	  and the JavaBeans Activation Framework from <A
+HREF="http://java.sun.com/beans/glasgow/jaf.html"
+TARGET="_top"
+>http://java.sun.com/beans/glasgow/jaf.html</A
+>.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-setting-up-qmail-very-important"
+>1.1.3. Setting up Qmail (Very Important)</A
+></H2
+><P
+>The following are instructions to modify the qmail install to be
+      compatible with WebMail. Qmail should already be installed and
+      running for this step. If not, follow instructions from <A
+HREF="http://www.qmail.org"
+TARGET="_top"
+>qmail.org</A
+> or ask your systems
+      administrator. The instructions are for a default installation. If
+      you need to modify the default settings, consult Appendix C. 
+    </P
+><P
+><B
+CLASS="phrase"
+>There is a script to make this task easier.</B
+> However,
+      this script was written on a Sun server and is not gauranteed to work 
+      correctly on your particular flavor of UNIX.  You should review its 
+      contents to verify that it will work properly for your particular 
+      machine and configuration.  The script is at 
+      <TT
+CLASS="computeroutput"
+>/webmail/scripts/wm-qmail-setup</TT
+>.
+      It must be run as root and automates all the steps outlined below in 
+      this section.  After running the script, proceed to 
+      <A
+HREF="acs-admin-guide.html#install-installing-the-package"
+>Installing the package</A
+>.
+    </P
+><P
+>If you choose not to run the script, please follow the directions 
+      below to configure qmail for Webmail.
+    </P
+><OL
+TYPE="1"
+><LI
+><P
+CLASS="listitem"
+>You must know what domain name you are going to use for your
+	  email e.g. here.there.com. You must then add your domain name to
+	  the <TT
+CLASS="filename"
+>rcpthosts</TT
+> file. This will tell qmail to accept mail for
+	  your domain. This file might or might not exist. If it doesn't
+	  exist create one. 
+
+	  <B
+CLASS="phrase"
+>Note that you should use the home directory of AOL Server if it
+	    is not /home/aol32 wherever appropriate.</B
+>
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # cd /var/qmail/control
+    # vi rcpthosts; on a new line simply add your domain name:
+    here.there.com
+    # exit
+    $
+    	  </PRE
+>
+
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Create an alias directory and make sure it can be written to by
+	  the nsadmin user. 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # mkdirhier /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias
+    # chown -R nsadmin:web /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail
+    	  </PRE
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Add the following line to /var/qmail/control/virtualdomains.
+	  This file may or may not exist if it does not exist just create it.
+
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # cd /var/qmail/control
+    # vi virtualdomains; add a line like this:
+    here.there.com:webmail-there
+    # exit
+    $
+    	  </PRE
+>
+
+	  Now we will decompose the string: <TT
+CLASS="computeroutput"
+>here.there.com:webmail-there</TT
+>
+
+	  <OL
+TYPE="a"
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>here.there.com</TT
+> : 
+		This is the hostname that resolves to the
+		webserver you are on. This is also the second half of your 
+		email address 
+		<TT
+CLASS="computeroutput"
+>*@here.there.com</TT
+>.
+	      </P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>webmail-there</TT
+> : 
+		This is prepended to the email address. So,
+		mail sent to 
+		<TT
+CLASS="computeroutput"
+>foo@here.there.com</TT
+> will be 
+		delivered internally by qmail as 
+		<TT
+CLASS="computeroutput"
+>webmail-there-foo@here.there.com</TT
+>.
+		This is so we 
+		can tell qmail to deliver the messages to Webmail instead of 
+		to the usual maildirs in each users home directory. In this 
+		case, the string "webmail" will be the qmail "account" which 
+		handles the mail for qmail, and "there" will be an identifier 
+		for Webmail associated with the 
+		<TT
+CLASS="computeroutput"
+>here.there.com</TT
+> domain.
+	      </P
+></LI
+></OL
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Run the following to find the user id and the group id of
+	  Oracle: 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # su - oracle 
+    $ id
+    uid=101(oracle) gid=102(oinstall)
+    $ exit
+    # exit
+    $
+    	  </PRE
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>&#13;	  Insert a line into <TT
+CLASS="filename"
+>users/assign</TT
+>.
+	  This file might or might not exist if it doesn't exist create one.
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # cd /var/qmail/users
+    # vi assign; add a line like this:
+    +webmail-:oracle:101:102:/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias:-::
+    .
+    # exit
+    $
+    	  </PRE
+>
+
+	  Make sure this file is ended by a line consisting of a single dot
+	  (.).
+	</P
+><P
+>&#13;	  Now we will decompose the string: 
+	  <TT
+CLASS="filename"
+>+webmail-:oracle:101:102:/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias</TT
+>
+	</P
+><OL
+TYPE="a"
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>+webmail-</TT
+> : 
+	      This is the name of the account that is going to
+	      handle all of the mail that comes in for webmail. WebMail reads all
+	      the mail as it comes into this account and figures out which user
+	      it is meant for and forwards it on to them.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>oracle</TT
+> :
+	      This is the user that has permission to read the mail
+	      and shove it into the database.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>101</TT
+> : This is the user id for oracle</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>102</TT
+> : This is the group id for oinstall</P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias</TT
+>: This is
+	      the alias directory which qmail will search when it delivers mail.
+	      Webmail will insert user alias files here.</P
+></LI
+></OL
+></LI
+><LI
+><P
+CLASS="listitem"
+>Choose a queue directory for deliveries to the webmail user.
+	  This directory must not be shared with any other virtual server
+	  running on the same machine;
+	  <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue</TT
+> should be a
+	  safe choice. Create the directory and make sure it is writable and
+	  readable by the oracle Unix account (or whatever user Oracle runs
+	  at): 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # /var/qmail/bin/maildirmake /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue
+    # chown -R oracle /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue
+    	  </PRE
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Now restart qmail. Run 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    # /var/qmail/bin/qmail-newu
+    # ps -ef | grep qmail
+    <TT
+CLASS="replaceable"
+><I
+>find the "qmail-send" PID</I
+></TT
+>
+    # kill -HUP <TT
+CLASS="replaceable"
+><I
+>qmail-send PID</I
+></TT
+>
+    	  </PRE
+>
+	</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-installing-the-package"
+>1.1.4. Installing the package</A
+></H2
+><P
+>First, you will have to obtain a copy of the Webmail package.
+      Then use the APM to install and enable the package. When given the
+      option, <B
+CLASS="phrase"
+>do not</B
+> install the 
+      <TT
+CLASS="filename"
+>MessageParser.sqlj</TT
+> and
+      <TT
+CLASS="filename"
+>MessageComposer.sqlj</TT
+> files. We will install these 
+      by hand later.
+      <B
+CLASS="phrase"
+>Do</B
+> install the <TT
+CLASS="filename"
+>webmail-create.sql</TT
+> file though.</P
+><P
+>Next you must create an instance of Webmail. Go to the site-map
+      and make a new sub-folder under <TT
+CLASS="filename"
+>/</TT
+> called 
+      <TT
+CLASS="filename"
+>webmail</TT
+> (you may choose a different mount point if you like). 
+      Click <I
+CLASS="emphasis"
+>new application</I
+> under this new webmail folder
+      and select the webmail package and give it a name. Then set the
+      following parameters:</P
+><UL
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>&#13;	  AliasDirectory=/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias/</TT
+></P
+></LI
+><LI
+><P
+CLASS="listitem"
+><TT
+CLASS="computeroutput"
+>&#13;	  QueueDirectory=/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/</TT
+></P
+></LI
+></UL
+><P
+>You may also choose different names for the four default mailboxes 
+      (INBOX, SENT, DRAFTS, and TRASH) if you prefer, by editing 
+      the appropriate parameters.  The parameter ShowMailboxInfo should be 
+      set to "t" if you want to display the number of unread/total messages
+      in each mailbox on the side nav-bar ("f" if not; this is both a UI
+      and a performance consideration).</P
+><P
+>To allow for proper display of dates accross timezones, make sure you have
+      installed the acs-lang package and set the system timezone to 
+      the timezone which Oracle is running in.  The timezones of the clients 
+      are individually set in the preferences section of the Webmail UI.</P
+><P
+>After setting these parameters, restart your aolserver so they
+      can be read in upon startup.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-loading-in-java-to-oracle"
+>1.1.5. Loading in Java to Oracle</A
+></H2
+><P
+>If you do not already have the JavaMail package and the JavaBeans
+      Activation Framework already loaded into Oracle, you will have to
+      do so now. </P
+><P
+>There is a script to make this easier at <TT
+CLASS="computeroutput"
+>&#13;      /webmail/scripts/wm-java-setup</TT
+>.
+      It should be run from the /tmp directory, and the zipped 
+      JavaMail and JAF jar files should be placed in the /tmp 
+      directory before running the script.  After the script has 
+      completed succesfully, proceed to <A
+HREF="acs-admin-guide.html#install-testing-the-system"
+>Testing the system</A
+>.
+    </P
+><P
+>Alternatively, you may do it by hand:</P
+><P
+>This loads the JavaBeans Activation Framework:
+
+      <PRE
+CLASS="programlisting"
+>    
+    $ cd /tmp
+    $ unzip jaf1_0_1.zip
+    $ unzip javamail1_1_3.zip
+    $ cd jaf-1.0.1
+    $ jar xvf activation.jar
+    $ rm activation.jar
+    $ jar cf0M activation.jar META-INF javax com
+    $ loadjava -user <TT
+CLASS="replaceable"
+><I
+>dbuser/dbuserpasswd</I
+></TT
+> -resolve -verbose activation.jar
+          </PRE
+>
+    </P
+><P
+>Don't worry if you get a verification warning, as long as there are
+      no errors.</P
+><PRE
+CLASS="programlisting"
+>    
+    This loads the JavaMail Program
+    $ cd ../javamail-1.1.3
+    $ jar xvf mail.jar       
+      --(if you get a could not create directory error, just run the command again, it should go away)
+    $ rm mail.jar
+    $ jar cf0M mail.jar META-INF javax com
+    $ loadjava -user <TT
+CLASS="replaceable"
+><I
+>dbuser/dbuserpasswd</I
+></TT
+> -resolve -verbose mail.jar
+        </PRE
+><P
+>Now we will go into the webmail directory and load the java
+      packages associated with it.
+    
+    <PRE
+CLASS="programlisting"
+>    
+    $ cd /web/<TT
+CLASS="replaceable"
+><I
+>yourservicename</I
+></TT
+>/packages/webmail/java
+    $ loadjava -user <TT
+CLASS="replaceable"
+><I
+>dbuser/dbpasswd</I
+></TT
+> -resolve -verbose BlobDataSource.java ClobDataSource.java StringBufDataSource.java MessageParser.sqlj MessageComposer.sqlj
+        </PRE
+>
+
+      The loader will probably complain about some errors. Don't worry about it 
+      because they're actually just a bunch of warnings.  As long as the loader does not 
+      say <TT
+CLASS="computeroutput"
+>ORA-29535: source requires recompilation</TT
+> you are okay.
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-testing-the-system"
+>1.1.6. Testing the system</A
+></H2
+><P
+>Now load up the page for <A
+HREF="/webmail/admin"
+TARGET="_top"
+>webmail/admin</A
+>. Register your domain with
+      the webmail system by using the administration pages, with (again,
+      just for this example) "there" as the short name and
+      "<TT
+CLASS="computeroutput"
+>here.there.com</TT
+>" as the domain name. 
+      These parameters must match
+      those you set up in the qmail control files. In particular, the
+      domain names must match, and the <I
+CLASS="emphasis"
+>short name</I
+> must match the
+      second string you entered in the <TT
+CLASS="filename"
+>virtualdomains</TT
+> 
+      file. In this case, we entered 
+      "<TT
+CLASS="computeroutput"
+>here.there.com:webmail-there</TT
+>",
+      so we choose "<I
+CLASS="emphasis"
+>there</I
+>" as the short name.</P
+><P
+>You then have to add a user to the domain and give that person
+      an email address. While you're at it, create an email account for the admin 
+      of this domain, and click the <I
+CLASS="emphasis"
+>choose admin</I
+> link 
+      to assign that person as the admin for the domain.  This person will receive
+      any undeliverable mail in a reserved mailbox called 
+      <TT
+CLASS="computeroutput"
+>SYSTEM</TT
+>.  If you do not assign an admin,
+      bounced mail will cause a parse error and remain in the queue directory. </P
+><P
+>To test the system, go to the <A
+HREF="/webmail"
+TARGET="_top"
+>webmail</A
+> user pages 
+    as the user whose account you created, and send an email to yourself.  Wait a minute
+    and then click <I
+CLASS="emphasis"
+>check mail</I
+> to see if it has arrived.  If that 
+    works, try sending and receiving from an external address.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-appendix-a-troubleshooting"
+>1.1.7. Appendix A: Troubleshooting</A
+></H2
+><P
+><B
+CLASS="phrase"
+>Mail is not getting delivered.</B
+></P
+><UL
+><LI
+><P
+CLASS="listitem"
+>First check that qmail is delivering mail properly to your
+	  queue. You may do this by viewing the qmail log at
+	  <TT
+CLASS="filename"
+>/var/log/syslog/</TT
+> to see what qmail is doing with the
+	  mail. If there are no errors there, use root access to view the
+	  contents of the queue: 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # ls /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/new
+    	  </PRE
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>If you don't see any messages (and qmail says it 
+	  delivered them succesfully to your webmail address), qmail is not 
+	  delivering mail to the right queue. Manually check the alias files 
+	  in the qmail directory: 
+
+	  <PRE
+CLASS="programlisting"
+>    
+    $ su
+    # ls -a /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias
+    .qmail-there-foo  (this is user foo's alias)
+    # cat .qmail-there-foo
+    /home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/
+    	  </PRE
+>
+	</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>If this does not point to the right qmail queue directory, you
+	  have not correctly configured the QueueDirectory parameter in
+	  Webmail. Change the QueueDirectory parameter to point to
+	  <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/</TT
+>,
+	  delete the user "foo" and then recreate his account. If the file
+	  .qmail-there-foo is not there, you need to set the AliasDirectory
+	  parameter to point to
+	  <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias/</TT
+>
+	  and delete and recreate the user.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>If mail is showing up in the correct queue directory, try
+	  processing the queue manually:
+
+	  <PRE
+CLASS="programlisting"
+>    
+    SQL&#62; execute wm_process_queue('/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/new');
+    	  </PRE
+>
+
+	  If the command fails and the error message says something like
+	  "file permission not granted", then go check
+	  <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail</TT
+> and
+	  <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/new</TT
+>. Make sure both
+	  of them have "oracle" as the owner. Another possible reason is that
+	  Oracle database user used by AOLServer has not been granted java
+	  execution privilege. Grant it the appropriate pemission, that
+	  should fix the problem.</P
+><P
+>You may also check that messages were actually inserted into
+	  Oracle by looking at the <TT
+CLASS="computeroutput"
+>wm_messages</TT
+> table. It is
+	  possible that these messages were inserted but not mapped to the
+	  user, in which case, they will show up in the admin's SYSTEM mailbox. The main
+	  reason for this happening is if the <I
+CLASS="emphasis"
+>short name</I
+> which you set
+	  up in the admin page does not match the entry in
+	  <TT
+CLASS="filename"
+>/var/qmail/control/virtualdomains</TT
+>. Fix this and then
+	  try resending mail.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-appendix-b-notes-for-webmail"
+>1.1.8. Appendix B: Notes for WebMail</A
+></H2
+><P
+>Once the domain has been set up, you can start adding email
+      accounts. An email account is tied to an ACS user; Email accounts
+      can be assigned to users by using the administration pages.</P
+><P
+>When an email account is added, a file is created automatically
+      in the alias directory of the form "<TT
+CLASS="filename"
+>.qmail-[short domain
+      name]-username</TT
+>" (e.g., "<TT
+CLASS="filename"
+>.qmail-wm-jsc</TT
+>") 
+      that contains one line with the full path to the queue directory
+      (<TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/</TT
+>). This file
+      specifies that mail sent to "<TT
+CLASS="computeroutput"
+>webmail-there-foo@here.there.com</TT
+>" be
+      delivered to the maildir directory that we have set up. All email
+      to be handled by the webmail system ends up in the same place
+      (<TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/queue/new</TT
+>). The
+      system uses the RFC822 Delivered-To header to distinguish who it
+      should be displayed to. The redirection through the .qmail alias
+      files is done so that only email sent to valid accounts will be
+      received. Email sent to an address that does not have a .qmail file
+      set up for it will bounce normally.</P
+><P
+>Once every minute, Oracle polls the new directory of the maildir
+      queue and picks up any mail that has been delivered. Using the
+      JavaMail library running inside Oracle, it stores and parses the
+      message, and saves off various pieces of information (parsed
+      headers, attachments, etc.; see the data model).</P
+><P
+><B
+CLASS="phrase"
+>Migration Issues</B
+></P
+><P
+>I have not written a complete migration script for updating
+      old Webmail installations to the new data model.  There are a few
+      useful functions included in the file <TT
+CLASS="computeroutput"
+>&#13;      /webmail/scripts/webmail-migrate.sql</TT
+>.  Feel free
+      to contact <A
+HREF="mailto:erik@arsdigita.com"
+TARGET="_top"
+>Erik Bielefeldt</A
+>
+       if you need advice regarding migration.
+    </P
+><P
+><B
+CLASS="phrase"
+>Performance Issues</B
+></P
+><P
+>The original Webmail was a little bit infamous for being a slug
+      when many users were on at once. Whether or not it deserved that
+      reputation, I have sought to improve the data model, simplify
+      overly complex queries, and tune things to run reasonably well (see
+      the <A
+HREF="design.html"
+>Webmail Design Document</A
+> for details). 
+    </P
+><P
+>Here are the results of my load testing:</P
+><P
+><B
+CLASS="phrase"
+>environment:</B
+></P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Sparc Ultra 10 333MHz processor</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>1 GB RAM</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Oracle 8.1.7</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>20,000 rows in the users table</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>80,000 mailboxes</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>137,000 messages</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>1,455,000 headers</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>1,900 attachments</P
+></LI
+></UL
+><P
+><B
+CLASS="phrase"
+>results:</B
+></P
+><P
+>I did not test the search functions, as the efficiency of the query
+      varies highly upon the particular user's search.  The following results 
+      are biased towards heavy use of the <TT
+CLASS="computeroutput"
+>index</TT
+>
+      and <TT
+CLASS="computeroutput"
+>message</TT
+> pages, 
+      with some <TT
+CLASS="computeroutput"
+>folder-index</TT
+>,
+      <TT
+CLASS="computeroutput"
+>preferences</TT
+>, 
+      <TT
+CLASS="computeroutput"
+>index-view</TT
+>, 
+      and <TT
+CLASS="computeroutput"
+>index-search</TT
+>
+      pages thrown in.  I tested the sending of messages seperately, but obtained
+      similar performance to the following results.
+    </P
+><UL
+><LI
+><P
+CLASS="listitem"
+>Capable of sustaining 3 hits/sec. up to 100 concurrent requests</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Longest query takes .4 seconds.</P
+></LI
+><LI
+><P
+CLASS="listitem"
+>Transfer rates of 30 Kb/s (I.e. 30Kb of data served per second by Webmail)</P
+></LI
+></UL
+><P
+>&#13;        I was a little disappointed by these results, but after 
+	spending several
+	days tuning this was the best that I could come up with.
+	As I expected, the index view was the costliest to produce,
+	and even with caching of the message ids it was quite slow.
+	However, I do not know of a reasonable way to speed it up.
+      </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="install-appendix-c-customizing-the-qmail-configuration"
+>1.1.9. Appendix C: Customizing the qmail configuration</A
+></H2
+><P
+>It is possible to choose different alias and queue directories
+      in the qmail setup. To choose a different alias directory, simply
+      follow the installation instructions above, but substitute the
+      desired directory for
+      <TT
+CLASS="filename"
+>/home/aol32/servers/<TT
+CLASS="replaceable"
+><I
+>yourservername</I
+></TT
+>/qmail/alias</TT
+>.
+      The queue directory may also be moved freely. Remember to update
+      the AliasDirectory and QueueDirectory parameters.</P
+><P
+>Webmail has been successfully used on a server cluster
+      (<I
+CLASS="emphasis"
+>iluvcamp</I
+> has used 6 servers for over 100,000 
+      users). A couple things to note: 
+      You should choose one server to handle all incoming mail and 
+      the processing of the queue by Oracle (presumably the machine the 
+      database is running on).
+      All of your AolServer instances may serve Webmail pages, however,
+      you must place the alias directory in a 
+      directory which is commonly accessible by all your servers. 
+      Generally, this will not be under 
+      <TT
+CLASS="filename"
+>/home/aol32</TT
+>.  A good bet would be under
+      your <TT
+CLASS="filename"
+>/web/servername/</TT
+> directory.
+      If you fail to do this, each server will end up having a different 
+      set of aliases on it (and your mail will start bouncing).  
+    </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+SIZE="1"
+NOSHADE="NOSHADE"
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="dev-guide.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Webmail</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Developer's guide</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

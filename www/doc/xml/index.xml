@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
+[
+    <!ENTITY install SYSTEM "install.xml">
+    <!ENTITY design SYSTEM "design.xml">
+    <!ENTITY requirements SYSTEM "requirements.xml">
+]>
+
+<book>
+  <title>Webmail</title>
+  <bookinfo>
+    <authorgroup>
+      <author>
+	<firstname>Erik</firstname>
+	<surname>Bielefeldt</surname>
+	<affiliation>
+	  <address><email>erik@arsdigita.com</email></address>
+	</affiliation>
+      </author>
+      <author>
+	<firstname>Jin</firstname>
+	<surname>Choi</surname>
+	<affiliation>
+	  <address><email>jsc@arsdigita.com</email></address>
+	</affiliation>
+      </author>
+    </authorgroup>
+  </bookinfo>
+  
+<!--
+  <chapter id="for-everyone" xreflabel="Webmail Introduction">
+    <title>Introduction</title>
+    <para><emphasis>Briefly answer two questions:</emphasis></para>
+    <itemizedlist>
+      <listitem><para>What does this package do?</para></listitem>
+      <listitem><para>How can my business benefit from using it?</para></listitem>
+    </itemizedlist>
+    <para><emphasis>You may want to cut and paste from your requirements doc.</emphasis></para>
+  </chapter>
+-->
+
+  <chapter id="acs-admin-guide" xreflabel="Webmail ACS Admin Guide">
+    <title>ACS Administrator's guide</title>
+    &install;
+  </chapter>
+  
+  <chapter id="dev-guide" xreflabel="Webmail Developer's Guide">
+    <title>Developer's guide</title>
+    &requirements;
+    &design;
+  </chapter>
+  
+  
+</book>
