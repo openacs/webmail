@@ -9,7 +9,6 @@
     <version name="4.0" url="http://www.arsdigita.com/acs-repository/download/apm/webmail-4.0.apm">
     <database-support>
         <database>oracle</database>
-        <database>postgresql</database>
     </database-support>
         <owner url="mailto:erik@arsdigita.com">Erik Bielefeldt</owner>
         <summary>Web-based email service.</summary>

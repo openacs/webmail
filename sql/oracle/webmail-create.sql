@@ -215,7 +215,7 @@ create table wm_headers (
 comment on table wm_headers is '
   Stores a copy of all headers, including duplicates of the ones stored 
   in wm_messages (Jin Choi requested this duplication for ease of 
-  integration with his IMAP server--originally, I didn't have it.)
+  integration with his IMAP server--originally, I did not have it.)
   This will be the largest (in terms of rows) table in the system--
   about 8 times as many rows as the wm_messages table.
   This is one of the reasons why I removed the four most common headers 
@@ -232,7 +232,11 @@ comment on column wm_headers.sort_order is '
 
 -- Improve lookup of a single header for a message, as well as index 
 -- the foreign key constraint
-create index wm_headers_by_msg_id_name on wm_headers (msg_id, lower(name));
+
+-- DRB: functional indexes require Enterprise Edition.  Comment this out
+-- if you have it.  The alternative index is probably just about as good.
+-- create index wm_headers_by_msg_id_name on wm_headers (msg_id, lower(name));
+create index wm_headers_by_msg_id on wm_headers (msg_id);
 
 
 create table wm_parse_errors (
