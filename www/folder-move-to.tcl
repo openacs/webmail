@@ -17,7 +17,7 @@ ad_page_contract {
 if { $mailbox_id == "@NEW" } {
     # Create new mailbox.
     ad_returnredirect "folder-create?target=[ad_urlencode $return_url]"
-    return
+    ad_script_abort
 }
 
 # Have to explicitly validate this integer because it was not validated in

@@ -21,7 +21,7 @@ foreach sort_order $attachments {
 	where m.outgoing_msg_id = :outgoing_msg_id } -default ""]
     if { $creation_user!=$user_id } {
 	doc_return 200 text/html "You are not the owner of this message."
-	return
+        ad_script_abort
     }
 
     db_dml attachment_remove_dml {

@@ -17,7 +17,7 @@ set msg_ids [ad_get_client_property "webmail" "selected_messages"]
 
 if { ![regexp {^[{} 0-9]+$} $msg_ids] } {
     wm_return_error "You have specified an invalid message."
-    return
+    ad_script_abort
 }
 
 wm_mailbox_verify_and_get_name $mailbox_id $user_id 
@@ -32,7 +32,7 @@ with_catch errmsg {
     wm_return_error "Refiling Failed" "Refiling of messages failed:
 $errmsg
 "
-    return
+    ad_script_abort
 }
 
 ad_returnredirect $return_url

@@ -16,13 +16,13 @@ ad_page_contract {
 if { ![exists_and_not_null msg_ids] } {
     # nothing selected
     ad_returnredirect $return_url
-    return
+    ad_script_abort
 }
 
 ad_set_client_property -persistent f "webmail" "selected_messages" $msg_ids
 
 if { [string equal $mailbox_id "@NEW"] } {
-    ad_returnredirect "folder-create.tcl?target=[ad_urlencode "refile-selected?[export_url_vars return_url]"]"
+    ad_returnredirect "folder-create?target=[ad_urlencode "refile-selected?[export_url_vars return_url]"]"
 }
 
 set user_id [ad_verify_and_get_user_id]
@@ -35,7 +35,7 @@ with_catch errmsg {
 	                AND name='TRASH'"]
 } {
     wm_return_error "You do not have a 'TRASH' folder--this is a problem."
-    return
+    ad_script_abort
 }
 
 wm_mailbox_verify_and_get_name $mailbox_id $user_id
@@ -60,7 +60,7 @@ with_catch errmsg {
     wm_return_error "Refiling of messages failed:
 $errmsg
 "
-    return
+    ad_script_abort
 }	
 	
 ad_returnredirect $return_url

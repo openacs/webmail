@@ -37,7 +37,7 @@ ad_proc wm_build_view_sql { user_id view_id } {
 	if { [empty_string_p $mailbox_ids] || [empty_string_p $constraint_list] || 
 	[empty_string_p $and_p] } {
 	    ad_returnredirect index-search
-	    return
+            ad_script_abort
 	}
     } elseif { ![db_0or1row view_query {
 	SELECT mailbox_ids, and_p

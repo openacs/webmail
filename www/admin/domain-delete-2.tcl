@@ -23,9 +23,10 @@ if { $action == "Delete" } {
     }
     db_dml wm_delete_domain "begin webmail.delete_domain(:short_name); end;"
     ad_returnredirect "index"
+    ad_script_abort
 } else {
     ad_returnredirect "domain-one?[export_url_vars short_name]"
-    return
+    ad_script_abort
 }
 
 

@@ -26,7 +26,7 @@ if { [string equal $action "Delete"] } {
     if { [wm_mailbox_name_reserved $folder_name] } {
 	wm_return_error "You are not allowed to delete the following mailboxes:
 	[wm_mailbox_name_for_display INBOX], [wm_mailbox_name_for_display DRAFTS], [wm_mailbox_name_for_display SENT], [wm_mailbox_name_for_display TRASH] and SYSTEM."
-	return
+        ad_script_abort
     }
     with_catch errmsg {
 	db_dml folder_mailbox_delete "
@@ -35,7 +35,7 @@ if { [string equal $action "Delete"] } {
 	wm_return_error "There was an error deleting your folder: 
 	
 	$errmsg"
-	return
+        ad_script_abort
     }
     ad_set_client_property -persistent f "webmail" "mailbox_list" ""
     ad_returnredirect "folder-index"
@@ -49,10 +49,10 @@ if { [string equal $action "Delete"] } {
 	wm_return_error "There was an error deleting your folder: 
 	
 	$errmsg"
-	return
+        ad_script_abort
     }
     ad_returnredirect $target
-    return
+    ad_script_abort
 }
 
 

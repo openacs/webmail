@@ -14,4 +14,4 @@ ad_page_contract {
 
 wm_add_user $user_id_from_search $username $short_name
 
-ad_returnredirect "domain-one.tcl?[export_url_vars short_name]"
+ad_returnredirect "domain-one?[export_url_vars short_name]"

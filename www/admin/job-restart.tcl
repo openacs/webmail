@@ -14,5 +14,5 @@ set db [ns_db gethandle]
 
 ns_db dml $db "begin dbms_job.broken($job, FALSE, sysdate); end;"
 
-ad_returnredirect "problems.tcl"
+ad_returnredirect "problems"
 

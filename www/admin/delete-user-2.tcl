@@ -36,9 +36,10 @@ if { $action == "Delete" } {
 	doc_return 200 text/html $result
     } else {
 	ad_returnredirect "domain-one?[export_url_vars short_name]"
+        ad_script_abort
     }
 } else {
     ad_returnredirect "domain-one-user?[export_url_vars user_id short_name]"
-    return
+    ad_script_abort
 }
 

@@ -29,6 +29,7 @@ db_transaction {
     }
 } on_error {
     doc_return 200 text/html "$errmsg"
+    ad_script_abort
 }
 
 ad_returnredirect "domain-one?[export_url_vars short_name]"

@@ -16,13 +16,13 @@ set user_id [ad_maybe_redirect_for_registration]
 
 if { [string length $folder_name] > 50 } {
     wm_return_error "The folder name you entered ($folder_name) was invalid.  Please hit back and try again (the length limit is 50 characters)"
-    return
+    ad_script_abort
 } 
 
 if { [string equal $folder_name SYSTEM] } {
     wm_return_error "We're sorry, you are not allowed to create a mailbox named SYSTEM.
 Please hit back and try another name."
-    return
+    ad_script_abort
 }
 db_transaction {
     set mailbox_id [db_nextval wm_global_sequence]
@@ -33,12 +33,12 @@ db_transaction {
 } on_error {
     if { [regexp -nocase {WM_MAILBOXES_USER_NAME_UN} $errmsg] } {
 	wm_return_error "A mailbox already exists with that name"
-	return
+        ad_script_abort
     }
     wm_return_error "An error occured while trying to create your folder:
 $errmsg
 "
-    return
+    ad_script_abort
 }
 
 ad_set_client_property -persistent f "webmail" "mailbox_list" ""

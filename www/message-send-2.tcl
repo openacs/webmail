@@ -25,7 +25,7 @@ ad_page_contract {
 
 if { [string equal $action "Cancel"] } {
     ad_returnredirect $return_url
-    return
+    ad_script_abort
 } 
 
 # from is reserved word in Oracle
@@ -37,7 +37,7 @@ if { [empty_string_p $return_url] } {
 
 if { [empty_string_p $to] && [empty_string_p $cc] && [empty_string_p $bcc]  } {
     wm_return_error "You did not specify any recipients for your message."
-    return
+    ad_script_abort
 }
 
 set user_id [ad_verify_and_get_user_id]
@@ -49,7 +49,7 @@ set creation_user [db_string creation_user {
 if { $creation_user != $user_id } {
     wm_return_error "We're sorry, but no such message exists. You may have taken to long to 
 compose it and it got cleaned up."
-    return
+    ad_script_abort
 }
 
 # only add signature if signature_use is checked and we're not saving a draft

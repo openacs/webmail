@@ -48,7 +48,7 @@ if { [string equal $action "Search"] } {
     ad_set_client_property -persistent f "webmail" "filter_mailboxes" $mailboxes
     ad_set_client_property -persistent f "webmail" "filter_constraints" $filter_list  
     ad_returnredirect "clear-cache-view?customize=t&view_id=-1"
-    return
+    ad_script_abort
 }
 
 

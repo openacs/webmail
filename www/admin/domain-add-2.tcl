@@ -14,9 +14,9 @@ ad_page_contract {
 set short_name [string tolower $short_name]
 
 if [db_0or1row check_if_domain_exists "select short_name as sn 
-from wm_domains where short_name = :short_name"] {
+ from wm_domains where short_name = :short_name"] {
     ad_return_complaint 1 "Short name already exists. You either double-clicked or forgot to choose a unique short name" 
-    return
+    ad_script_abort
 } else {
     db_dml add_domain {
 	insert into wm_domains (short_name, full_domain_name)
@@ -24,4 +24,4 @@ from wm_domains where short_name = :short_name"] {
     }
 }
 
-ad_returnredirect "index.tcl"
+ad_returnredirect {} 

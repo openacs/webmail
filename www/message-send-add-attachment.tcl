@@ -23,18 +23,18 @@ if { $creation_user == "" } {
     set errmsg "The message to which you are attempting to attach a file 
 is no longer valid.  Maybe you already sent it away, 
 or you waited too long."
-    ad_returnredirect "attachments-error.tcl?[export_url_vars errmsg outgoing_msg_id]"
-    return
+    ad_returnredirect "attachments-error?[export_url_vars errmsg outgoing_msg_id]"
+    ad_script_abort
 } elseif { $creation_user != $user_id } {
     set errmsg "You do not have permission to attach a file to this message."
-    ad_returnredirect "attachments-error.tcl?[export_url_vars errmsg outgoing_msg_id]"
-    return
+    ad_returnredirect "attachments-error?[export_url_vars errmsg outgoing_msg_id]"
+    ad_script_abort
 }
 
 if { [empty_string_p $upload_file] } {
     set errmsg "You must specify a file to attach."
-    ad_returnredirect "attachments-error.tcl?[export_url_vars errmsg outgoing_msg_id]"
-    return
+    ad_returnredirect "attachments-error?[export_url_vars errmsg outgoing_msg_id]"
+    ad_script_abort
 }
 
 set tmp_filename [ns_queryget upload_file.tmpfile]

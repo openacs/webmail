@@ -27,4 +27,4 @@ db_foreach user_mailboxes {
     }
 }
 
-ad_returnredirect "problems.tcl"
+ad_returnredirect "problems"

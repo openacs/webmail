@@ -25,7 +25,7 @@ set user_id [ad_verify_and_get_user_id]
 
 if { [empty_string_p $mailbox_id] && [string equal $action "Refile"] } {
     ad_return_complaint 1 "<li>You have to select a folder to which to refile this message."
-    return
+    ad_script_abort
 }
 
 with_catch errmsg { 
@@ -36,7 +36,7 @@ with_catch errmsg {
 	                AND name='TRASH'"]
 } {
     wm_return_error "You do not have a '[wm_mailbox_name_for_display TRASH]' folder.  That is not good."
-    return
+    ad_script_abort
 }
 
 if { [string equal $action "Delete"] } {
@@ -58,7 +58,7 @@ with_catch errmsg {
     wm_return_error "Refiling failed:
 $errmsg
 "
-    return
+    ad_script_abort
 }
 
 set index_url "index"
@@ -74,10 +74,10 @@ if { $view_id == "0" } {
 }
 
 if { ( [string equal $action "Delete"] 
-&& [wm_get_preference $user_id delete_move_index_p]=="t" ) 
-|| $next_msg_id == "" } {
+       && [wm_get_preference $user_id delete_move_index_p]=="t" ) 
+     || $next_msg_id == "" } {
     ad_returnredirect $index_url
-    return    
+    ad_script_abort
 }
 
 ad_returnredirect "message?msg_id=$next_msg_id&view_id=$view_id"

@@ -85,8 +85,9 @@ db_transaction {
 We had an error inserting this view:
 $errmsg
 "
-return
+    ad_script_abort
 }
+
 set view_id $filter_view
 ad_returnredirect "$return_url?[export_url_vars view_id edit_filter_id]"
 

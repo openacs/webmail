@@ -127,6 +127,7 @@ db_transaction {
 
 $errmsg
 "
+    ad_script_abort
 }
 ad_set_client_property -persistent f "webmail" "client_tz_offset" ""
 
