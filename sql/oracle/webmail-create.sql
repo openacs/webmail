@@ -698,7 +698,9 @@ create index wm_ctx_index on wm_messages (body) indextype is ctxsys.context;
 create or replace procedure wm_resync_indexes
 as
 begin
-  execute immediate 'alter index wm_ctx_index rebuild online parameters(''sync'')';
+-- DRB: Use the "online" version if you have Oracle Enterprise Edition
+--  execute immediate 'alter index wm_ctx_index rebuild online parameters(''sync'')';
+  execute immediate 'alter index wm_ctx_index rebuild parameters(''sync'')';
 --  execute immediate 'alter index wm_att_ctx_index rebuild online parameters(''sync'')';
 end;
 /
