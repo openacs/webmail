@@ -14,7 +14,7 @@
         <summary>Web-based email service.</summary>
         <release-date>2001-02-15</release-date>
         <vendor url="http://www.arsdigita.com">ArsDigita Corporation</vendor>
-        <description format="text/html">Provides a web-based email service for ACS 4.x.  Please follow the installation instructions in /webmail/www/doc/ that are provided with the package.</description>
+        <description format="text/html">Provides a web-based email service for ACS 4.x, uses the database for message storage.  Broken and oracle only.</description>
 
         <requires url="acs-kernel" version="4.6.2"/>
 
