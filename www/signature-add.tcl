@@ -22,7 +22,6 @@ set html_p [wm_get_preference $user_id signature_html_p]
 
 set html_check [ad_decode [string equal $html_p "t"] 1 "checked" ""]
 
-ad_template_return
 
 
 
