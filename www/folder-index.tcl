@@ -6,7 +6,7 @@ ad_page_contract {
 
     @author Erik Bielefeldt (erik@arsdigita.com)
     @creation-date 2000-09-15
-    @cvs-id $Id$ 
+    @cvs-id $Id$
 } {
 } -properties {
     folder_table:onevalue

@@ -5,7 +5,7 @@ ad_page_contract {
     
     @author Erik Bielefeldt (erik@arsdigita.com)
     @creation-date 2000-11-07
-    @cvs-id $Id
+    @cvs-id $Id$
 } {
     edit_filter_id:integer,notnull
 }
