@@ -16,7 +16,7 @@
         <vendor url="http://www.arsdigita.com">ArsDigita Corporation</vendor>
         <description format="text/html">Provides a web-based email service for ACS 4.x.  Please follow the installation instructions in /webmail/www/doc/ that are provided with the package.</description>
 
-        <requires url="acs-kernel" version="4.0"/>
+        <requires url="acs-kernel" version="4.6.2"/>
 
         <files>
             <file type="java_code" path="java/BlobDataSource.java"/>
