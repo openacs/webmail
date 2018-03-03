@@ -29,30 +29,30 @@
 
   <td>Automatically save sent messages? </td>
   <td>
-    <input type=radio name="auto_save_p" value="t" <if @auto_save_p@ eq "t">checked</if>> Yes &nbsp;
-    <input type=radio name="auto_save_p" value="f" <if @auto_save_p@ eq "f">checked</if>> No 
+    <input type=radio name="auto_save_p" value="t" <if @auto_save_p;literal@ true>checked</if>> Yes &nbsp;
+    <input type=radio name="auto_save_p" value="f" <if @auto_save_p;literal@ false>checked</if>> No 
   </td>
 </tr><tr>
 
   <td>Give confirmation page for sent messages? </td>
   <td>
-    <input type=radio name="confirmation_p" value="t" <if @confirmation_p@ eq "t">checked</if>> Yes &nbsp;
-    <input type=radio name="confirmation_p" value="f" <if @confirmation_p@ eq "f">checked</if>> No 
+    <input type=radio name="confirmation_p" value="t" <if @confirmation_p;literal@ true>checked</if>> Yes &nbsp;
+    <input type=radio name="confirmation_p" value="f" <if @confirmation_p;literal@ false>checked</if>> No 
   </td>
 </tr><tr>
 
   <td>Use signature as default?</td>
   <td>
-    <input type=radio name="signature_p" value="t" <if @signature_p@ eq "t">checked</if>> Yes &nbsp;
-    <input type=radio name="signature_p" value="f" <if @signature_p@ eq "f">checked</if>> No 
+    <input type=radio name="signature_p" value="t" <if @signature_p;literal@ true>checked</if>> Yes &nbsp;
+    <input type=radio name="signature_p" value="f" <if @signature_p;literal@ false>checked</if>> No 
     &nbsp;&nbsp;<input type=button value="Edit Signature" onclick="window.open('signature-add', 'signature','toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,copyhistory=no,width=600,height=300');">
   </td> 
 </tr><tr>
 
   <td>Move to index upon message delete? </td>
   <td>
-    <input type=radio name="delete_move_index_p" value="t" <if @delete_move_index_p@ eq "t">checked</if>> Yes &nbsp;
-    <input type=radio name="delete_move_index_p" value="f" <if @delete_move_index_p@ eq "f">checked</if>> No 
+    <input type=radio name="delete_move_index_p" value="t" <if @delete_move_index_p;literal@ true>checked</if>> Yes &nbsp;
+    <input type=radio name="delete_move_index_p" value="f" <if @delete_move_index_p;literal@ false>checked</if>> No 
   </td>
 </tr><tr>
 
@@ -63,8 +63,8 @@
 
   <td>Turn forwarding to the above address on? </td>
   <td>
-    <input type=radio name="forward_p" value="t" <if @forward_p@ eq "t">checked</if>> Yes &nbsp;
-    <input type=radio name="forward_p" value="f" <if @forward_p@ eq "f">checked</if>> No 
+    <input type=radio name="forward_p" value="t" <if @forward_p;literal@ true>checked</if>> Yes &nbsp;
+    <input type=radio name="forward_p" value="f" <if @forward_p;literal@ false>checked</if>> No 
   </td>
 </tr>
 <if @timezones:rowcount@ ne 0>

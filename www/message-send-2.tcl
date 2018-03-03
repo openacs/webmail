@@ -83,7 +83,7 @@ set wm_err ""
 
 ################### START THE TRANSACTION ###################
 db_transaction {
-    set cleaned_body [wrap_string $body]	
+    set cleaned_body [ns_reflow_text -- $body]
     db_dml wm_update_message_body {
 	UPDATE wm_outgoing_messages 
 	SET body = empty_clob() 

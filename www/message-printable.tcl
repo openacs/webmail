@@ -77,7 +77,7 @@ if { $body_display_style == "unparsed" || $msg_body == "" } {
     
 }
 
-set final_msg_body [wrap_string $final_msg_body 80]
+set final_msg_body [ns_reflow_text -width 80 -- $final_msg_body]
 
 ad_return_template
 

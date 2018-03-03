@@ -45,7 +45,7 @@
   </select>
   <input type=submit name="action" value="Refile">
 
-<if @deleted_p@ eq "f">
+<if @deleted_p;literal@ false>
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input type=submit name="action" value="Delete">
 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -95,7 +95,7 @@
   </else>
   </font>
 
-<if @mime_message_p@ eq 1>
+<if @mime_message_p;literal@ true>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <font size=-1>
   <if @body_display_style@ eq "parsed">
@@ -129,7 +129,7 @@
   </select>
   <input type=submit name="action" value="Refile">
 
-<if @deleted_p@ eq "f">
+<if @deleted_p;literal@ false>
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input type=submit name="action" value="Delete">
 &nbsp;&nbsp;&nbsp;&nbsp;

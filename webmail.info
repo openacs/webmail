@@ -6,7 +6,7 @@
     <pretty-plural>Webmail</pretty-plural>
     <singleton-p>t</singleton-p>
 
-    <version name="4.0" url="http://openacs.org/repository/download/apm/webmail-4.0.apm">
+    <version name="4.1d0" url="http://openacs.org/repository/download/apm/webmail-4.1d0.apm">
     <database-support>
         <database>oracle</database>
     </database-support>
@@ -15,8 +15,10 @@
         <release-date>2001-02-15</release-date>
         <vendor url="http://openacs.org">OpenACS</vendor>
         <description format="text/html">Provides a web-based email service for ACS 4.x, uses the database for message storage.  Broken and oracle only.</description>
+        <provides url="webmail" version="4.1d0"/>
 
         <requires url="acs-kernel" version="4.6.2"/>
+	<requires url="acs-tcl" version="5.10.0d7"/>
 
         <files>
             <file type="java_code" path="java/BlobDataSource.java"/>

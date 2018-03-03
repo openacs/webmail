@@ -1,6 +1,6 @@
 Match:&nbsp;
-<input type=radio name="and_p" value="t" <if @and_p@ eq "t">checked</if>> all constraints &nbsp;
-<input type=radio name="and_p" value="f" <if @and_p@ eq "f">checked</if>> any constraint <br>
+<input type=radio name="and_p" value="t" <if @and_p;literal@ true>checked</if>> all constraints &nbsp;
+<input type=radio name="and_p" value="f" <if @and_p;literal@ false>checked</if>> any constraint <br>
 
 <if @no_text@ eq "f">
 <br>
