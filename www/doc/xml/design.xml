@@ -9,7 +9,7 @@
     <itemizedlist>
       <listitem><para>User-accessible directory: <ulink url="/webmail/">/webmail/</ulink></para></listitem>
 
-      <listitem><para>Site adminstrator directory: <ulink url="/webmail/admin/">/webmail/admin/</ulink></para></listitem>
+      <listitem><para>Site administrator directory: <ulink url="/webmail/admin/">/webmail/admin/</ulink></para></listitem>
 
       <listitem><para>data model: <ulink url="/doc/sql/display-sql?url=/doc/sql/webmail.sql">/doc/sql/webmail.sql</ulink></para></listitem>
 
