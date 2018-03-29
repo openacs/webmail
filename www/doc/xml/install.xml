@@ -93,7 +93,7 @@ $
     </para>
 
     <para><phrase>There is a script to make this task easier.</phrase> However,
-      this script was written on a Sun server and is not gauranteed to work 
+      this script was written on a Sun server and is not guaranteed to work 
       correctly on your particular flavor of UNIX.  You should review its 
       contents to verify that it will work properly for your particular 
       machine and configuration.  The script is at 
