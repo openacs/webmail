@@ -254,10 +254,10 @@ db_transaction {
     }
 } on_error {
     if { [empty_string_p $wm_err] } {
-	wm_return_error "An error occured while composing your message: 
+	wm_return_error "An error occurred while composing your message: 
 $errmsg"
     } else {
-	wm_return_error "An error occured while composing your message: 
+	wm_return_error "An error occurred while composing your message: 
 <b>$wm_err</b>"
     }
 }

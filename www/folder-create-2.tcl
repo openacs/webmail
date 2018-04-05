@@ -35,7 +35,7 @@ db_transaction {
 	wm_return_error "A mailbox already exists with that name"
         ad_script_abort
     }
-    wm_return_error "An error occured while trying to create your folder:
+    wm_return_error "An error occurred while trying to create your folder:
 $errmsg
 "
     ad_script_abort

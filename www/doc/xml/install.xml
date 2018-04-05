@@ -69,7 +69,7 @@ $
 
     <orderedlist>
       <listitem><para><ulink url="http://www.qmail.org">Qmail</ulink>: Qmail is the mail
-	  delivery tool we will use to send a recieve mail from your web
+	  delivery tool we will use to send a receive mail from your web
 	  server. This should replace sendmail.</para></listitem>
 
       <listitem><para><ulink url="http://java.sun.com/products/jdk/1.2/download-linux.html">Java

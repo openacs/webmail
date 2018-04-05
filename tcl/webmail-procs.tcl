@@ -95,7 +95,7 @@ ad_proc wm_add_user { user_id username short_name } {
 	puts $alias_fp [ad_parameter -package_id [wm_get_webmail_id] QueueDirectory]
 	close $alias_fp
     } on_error {
-	ad_return_error "Error Creating Email Account" "An error occured while 
+	ad_return_error "Error Creating Email Account" "An error occurred while 
 	trying to create the email account for $username@$full_domain_name:
 	<pre>
 	$errmsg
@@ -109,7 +109,7 @@ ad_proc wm_add_user { user_id username short_name } {
 ad_proc wm_delete_user { user_id } {
     deletes the user and their qmail alias including all their 
     messages and mailboxes
-    @return Any error message that might have occured, empty string if none.
+    @return Any error message that might have occurred, empty string if none.
 } {
     with_catch errmsg {
 	db_1row domain_and_user_name {
@@ -309,7 +309,7 @@ ad_proc wm_build_index_from_cache {
     with_catch errmsg {
 	set message_headers [ad_table -Torder_target_url $order_target_url -Torderby $orderby -Ttable_extra_html "border=0 cellspacing=1 cellpadding=0 width=100%" -Tband_colors [list "\#ffffff" "\#f0f0f0"] -Trows_per_page 1000 -Tasc_order_img "<img src=graphics/up.gif alt=\"^\">" -Tdesc_order_img "<img src=graphics/down.gif alt=\"v\">" webmail_message_headers $sql $table_def]
     } {
-	wm_return_error "An error occured while trying to fetch your messages.
+	wm_return_error "An error occurred while trying to fetch your messages.
 	<p>
 	The error message received was:
 	$errmsg
