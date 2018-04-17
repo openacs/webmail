@@ -319,7 +319,7 @@ $ su
       It should be run from the /tmp directory, and the zipped 
       JavaMail and JAF jar files should be placed in the /tmp 
       directory before running the script.  After the script has 
-      completed succesfully, proceed to <xref linkend="install-testing-the-system"></xref>.
+      completed successfully, proceed to <xref linkend="install-testing-the-system"></xref>.
     </para>
 
     <para>Alternatively, you may do it by hand:</para>
@@ -414,7 +414,7 @@ $ su
 	</para></listitem>
 
       <listitem><para>If you don't see any messages (and qmail says it 
-	  delivered them succesfully to your webmail address), qmail is not 
+	  delivered them successfully to your webmail address), qmail is not 
 	  delivering mail to the right queue. Manually check the alias files 
 	  in the qmail directory: 
 
@@ -544,7 +544,7 @@ SQL&gt; execute wm_process_queue('/home/aol32/servers/<replaceable>yourservernam
       <computeroutput>preferences</computeroutput>, 
       <computeroutput>index-view</computeroutput>, 
       and <computeroutput>index-search</computeroutput>
-      pages thrown in.  I tested the sending of messages seperately, but obtained
+      pages thrown in.  I tested the sending of messages separately, but obtained
       similar performance to the following results.
     </para>
 

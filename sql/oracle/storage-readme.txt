@@ -3,20 +3,20 @@
 # @creation-date 2001-02-07
 # @cvs_id $Id$
 
-Because Webmail is centered around a few heavily used tables, 
-I thought that giving the dba some idea of the sizes of these 
+Because Webmail is centered around a few heavily used tables,
+I thought that giving the dba some idea of the sizes of these
 tables would help in setting up appropriate tablespaces
-and storage clauses for Webmail.  
+and storage clauses for Webmail.
 
-I have included a table of all the tables and indexes created by 
+I have included a table of all the tables and indexes created by
 the Webmail package, and their approximate sizes PER ROW of data.
-Obviously, you must first come up with some expectations on 
-usage and table size first.  
+Obviously, you must first come up with some expectations on
+usage and table size first.
 
 The most important items to pay attention to are WM_MESSAGES,WM_HEADERS,
-and WM_HEADERS_BY_MSG_ID_NAME.  I highly recommend a suitable storage 
+and WM_HEADERS_BY_MSG_ID_NAME.  I highly recommend a suitable storage
 clause for these to avoid a large amount of fragmentation.  You should
-also consider storing the lobs from these tables in seperate tablespaces.
+also consider storing the lobs from these tables in separate tablespaces.
 
 I haven't really had problems with chained rows using pctfree 10%.
 

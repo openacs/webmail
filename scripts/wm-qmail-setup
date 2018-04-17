@@ -12,7 +12,7 @@ on a Sun workstation, and may need customization to run
 on your particular flavor of UNIX.  Make sure to verify 
 that you wish to allow the modifications that this script 
 will make to your qmail configuration.  Also, be sure to 
-verify that all changes were succesful afterwards.
+verify that all changes were successful afterwards.
 (return to continue)\n"
 gets stdin junk
 

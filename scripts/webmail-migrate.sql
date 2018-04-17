@@ -1,10 +1,10 @@
--- The following procedure is handy for copying existing mail from 
--- an old webmail account to a new 4.0 account (in a seperate tablespace).
+-- The following procedure is handy for copying existing mail from
+-- an old webmail account to a new 4.0 account (in a separate tablespace).
 -- Note that the new user's account must already have been created.
 -- This system also uses the old message ids, therefore the migration
 -- must be done before receiving any new messages into the new tables..
--- After the migration is done, you must start the wm_global_sequence at 
--- a number greater than the largest msg_id 
+-- After the migration is done, you must start the wm_global_sequence at
+-- a number greater than the largest msg_id
 -- (i.e.  create sequence wm_global_sequence start with 1000000 )
 
 create or replace procedure wm_migrate_user (

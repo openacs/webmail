@@ -89,7 +89,7 @@ if { [regexp {FileNotFoundException} $webmail_errors]
   puts "\nError: There was a problem loading in the Webmail Java files.
 Please consult the installation guide for troubleshooting details."
 } else {
-  puts "Congratulations!  You have succesfully loaded the necessary
+  puts "Congratulations!  You have successfully loaded the necessary
 Java files.  Please review jaf-errors.log, javamail-errors.log,
 and webmail-errors.log to make sure there were no un-detected errors upon 
 install."

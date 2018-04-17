@@ -29,8 +29,8 @@ if { $show_mailbox_info == "f" } {
 	}
     }
 } else {
-    # If you don't do the users_folders query seperately,
-    # Oracle does it for each row in the second query, 
+    # If you don't do the users_folders query separately,
+    # Oracle does it for each row in the second query,
     # thus slowing things down big time
     set users_folders [join [db_list users_folders "
       SELECT mailbox_id FROM wm_mailboxes WHERE user_id=:user_id"] ","]

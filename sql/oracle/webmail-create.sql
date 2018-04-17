@@ -273,7 +273,7 @@ comment on table wm_outgoing_messages is '
   sent, or already sent).  
   This table is cleaned out periodically by a scheduled proc.
   Note that saved drafts are not kept in 
-  this table, but are transfered to the main wm_messages table.
+  this table, but are transferred to the main wm_messages table.
 ';
 
 -- Index the foreign key constraint to allow row-level locking on updates
@@ -413,7 +413,7 @@ comment on table wm_filter_views is '
 ';
 
 comment on column wm_filter_views.mailbox_ids is '
-  Contains comma seperated list of mailboxes which the view applies to.
+  Contains comma separated list of mailboxes which the view applies to.
   0 if it applies to all the user''s mailboxes.
 ';
 

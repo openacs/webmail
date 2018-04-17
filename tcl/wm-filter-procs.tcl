@@ -54,7 +54,7 @@ ad_proc wm_build_view_sql { user_id view_id } {
 	    FROM wm_filter_constraints 
 	    WHERE filter_view=:view_id}]
     }
-    # tabls_string includes the sql for selecting which tables we need
+    # table_string includes the sql for selecting which tables we need
     set table_string " FROM wm_messages m "
 
     # where string includes the first part of the where clause
@@ -69,14 +69,14 @@ ad_proc wm_build_view_sql { user_id view_id } {
 	set where_string "WHERE mailbox_id in ($mailbox_ids) "
     }
 
-    # where_list is a list of sql conditions which will be joined 
+    # where_list is a list of sql conditions which will be joined
     # by the variable comb
-    # where_list will contain comparisons of search strings to 
+    # where_list will contain comparisons of search strings to
     # different fields (headers, body, etc.)
     set where_list [list]
 
     # "i" is a counter which we append to the name of wm_headers
-    # to distinguish between seperate references to it
+    # to distinguish between separate references to it
     # (i.e. if we join w/ wm_headers twice, we'll refer to the first
     # as "h1" and the second as "h2"
     set i 1

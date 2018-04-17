@@ -222,8 +222,8 @@ create index wm_messages_by_message_id on wm_messages(message_id);
       message may have been received multiple times.</para>
 
     <para>We also store the 4 header columns which are needed for the mailbox
-      index view in the wm_messages table. These were seperated from the
-      other headers which are stored in a seperate table (see below)
+      index view in the wm_messages table. These were separated from the
+      other headers which are stored in a separate table (see below)
       because previous Webmail installations experienced problems with
       slow index views. The
       net effect of this is immediately visible: while index views of
@@ -241,7 +241,7 @@ create index wm_messages_by_message_id on wm_messages(message_id);
       gives up the possibility of mapping messages to multiple mailboxes
       (which was a feature that was not utilized in the previous Webmail
       anyhow). One possibility to regain this functionality would be to
-      have a column in wm_messages which references a seperate table
+      have a column in wm_messages which references a separate table
       which would contain "common" messages which multiple users could
       view as normal messages. Such a feature could save resources for
       intra-Webmail spam, and may be implemented in the future if deemed
