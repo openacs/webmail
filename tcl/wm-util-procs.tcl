@@ -101,7 +101,7 @@ ad_proc wm_remove_duplicate_emails {
     "Name" <email>, the corresponding output will be similar (including both
     names and email), but only the actual email address will be checked.
 } {
-  set return_emails {}
+  set return_emails [list]
   foreach email $email_list {
     set email [string trim $email]
     if { ![regexp {<([^>]+)>} $email match email_value] } {
@@ -170,11 +170,11 @@ ad_proc wm_get_message_headers { msg_id user_id header_display_style references_
     @param content_types The name of the variable you want the list of content-type headers stored in.
     @return A list of header value pairs.
 } {
-    set return_fields {}
+    set return_fields [list]
     upvar $references_var rvar
-    set rvar {}
+    set rvar [list]
     upvar $content_types c_types
-    set c_types {}
+    set c_types [list]
     if { $header_display_style == "short" } {
 	set header_restriction_clause " and lower(name) in ('cc', 'in-response-to', 'references', 'reply-to', 'to', 'from', 'subject', 'date', 'content-type')"
     } else {
@@ -188,7 +188,7 @@ ad_proc wm_get_message_headers { msg_id user_id header_display_style references_
       ORDER BY sort_order desc"]
 
     # Re-order four main headers to always be first
-    set new_header_fields {}
+    set new_header_fields [list]
     foreach name { from to subject date } {
 	set pos [lsearch -regexp $header_fields "^${name} (.*)"]
 	lappend new_header_fields [lindex $header_fields $pos]
@@ -301,7 +301,7 @@ ad_proc wm_message_navigation_links { current_msg_id } {
         }
         set last $msg_id
     }
-    set nav_links {}
+    set nav_links [list]
     return [list [list "Previous Unread" $prev_unread] \
 	    [list "Previous" $prev] [list "Next" $next] \
 	    [list "Next Unread" $next_unread] ] 
