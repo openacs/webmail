@@ -47,7 +47,7 @@ set creation_user [db_string creation_user {
     FROM wm_outgoing_messages
     WHERE outgoing_msg_id = :outgoing_msg_id} -default ""]
 if { $creation_user != $user_id } {
-    wm_return_error "We're sorry, but no such message exists. You may have taken to long to 
+    wm_return_error "We're sorry, but no such message exists. You may have taken too long to 
 compose it and it got cleaned up."
     ad_script_abort
 }
