@@ -141,7 +141,7 @@ db_transaction {
 	set old_message_id [db_string old_message_id "
 	                        SELECT message_id FROM wm_messages
 	                        WHERE msg_id = :response_to_msg_id" -default ""]
-	set references [DoubleApos [string trim "$old_references $old_message_id"]]
+	set references [string trim "$old_references $old_message_id"]
 	if { ![empty_string_p $references] } {
 	    db_dml insert_references "INSERT INTO wm_outgoing_headers 
 		               (outgoing_msg_id, name, value, sort_order)

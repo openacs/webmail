@@ -43,11 +43,7 @@ set content_type [ns_guesstype $upload_file]
 if { [empty_string_p $content_type] } {
     set content_type "application/octet-stream"
 }
-
-# Get rid of UNIX style directory names.
-set filename [file tail [DoubleApos $upload_file]]
-# Get rid of DOS style directory names.
-regsub {.*\\([^\\]+)$} $filename {\1} filename
+set file_name [ad_sanitize_filename $upload_file]
 
 db_dml wm_add_attachment {
              INSERT INTO wm_outgoing_message_parts 
