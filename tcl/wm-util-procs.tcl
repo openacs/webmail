@@ -194,7 +194,7 @@ ad_proc wm_get_message_headers { msg_id user_id header_display_style references_
 	lappend new_header_fields [lindex $header_fields $pos]
 	set header_fields [lreplace $header_fields $pos $pos]
     }
-    set new_header_fields [concat $new_header_fields $header_fields]
+    lappend new_header_fields {*}$header_fields
     
     foreach field $new_header_fields {
 	set lower_name [lindex $field 0]
