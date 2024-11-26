@@ -122,7 +122,7 @@ ad_proc wm_delete_user { user_id } {
 	    webmail.delete_user(:user_id); 
 	    end;
 	}
-	ns_unlink $file_string
+	file delete $file_string
     } {
 	return $errmsg
     }
